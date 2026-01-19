@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { Plus, Pencil, Trash2, Zap } from 'lucide-react'
 import { useStore } from '@/store/useStore'
 import { ItemType, ITEM_LABELS, DEFAULT_ITEM_ICONS, IconName } from '@/types'
 import ConfirmDialog from './ConfirmDialog'
@@ -69,28 +70,29 @@ export default function ItemSection({ roomId }: Props) {
   }
 
   return (
-    <div className="w-64 p-6 overflow-auto bg-gray-50">
+    <div className="w-full lg:w-72 p-4 sm:p-6 overflow-auto bg-white">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-sm font-semibold text-gray-600">ITEMS</h2>
+        <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Items</h2>
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setShowDropdown(!showDropdown)}
             aria-label="Add item"
             aria-expanded={showDropdown}
-            className="px-3 py-1 bg-green-500 text-white text-sm rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500 text-white text-sm font-medium rounded-lg hover:bg-emerald-600 transition-colors shadow-sm shadow-emerald-500/20"
           >
-            + Add
+            <Plus size={16} />
+            Add
           </button>
           {showDropdown && (
-            <div className="absolute right-0 top-8 bg-white border rounded shadow-lg py-1 z-10 min-w-36">
+            <div className="absolute right-0 top-10 bg-white border border-slate-200 rounded-xl shadow-xl py-2 z-10 min-w-44">
               {ITEM_TYPES.map((type) => (
                 <button
                   key={type}
                   onClick={() => handleAdd(type)}
-                  className="flex items-center gap-2 w-full text-left px-3 py-2 text-sm hover:bg-gray-100 focus:outline-none focus:bg-gray-100"
+                  className="flex items-center gap-3 w-full text-left px-4 py-2.5 text-sm hover:bg-slate-50 transition-colors"
                 >
-                  <ItemIcon icon={DEFAULT_ITEM_ICONS[type]} size={16} className="text-gray-600" />
-                  {ITEM_LABELS[type]}
+                  <ItemIcon icon={DEFAULT_ITEM_ICONS[type]} size={18} className="text-slate-500" />
+                  <span className="text-slate-700">{ITEM_LABELS[type]}</span>
                 </button>
               ))}
             </div>
@@ -99,14 +101,18 @@ export default function ItemSection({ roomId }: Props) {
       </div>
 
       {roomItems.length === 0 ? (
-        <div className="text-center py-6">
-          <p className="text-sm text-gray-400 mb-2">No items yet</p>
-          <p className="text-xs text-gray-400 mb-3">Items are things you want to control (lights, fans, blinds)</p>
+        <div className="text-center py-10">
+          <div className="w-12 h-12 mx-auto mb-3 bg-slate-100 rounded-xl flex items-center justify-center">
+            <Zap size={24} className="text-slate-400" />
+          </div>
+          <p className="text-sm text-slate-500 mb-1">No items yet</p>
+          <p className="text-xs text-slate-400 mb-4">Items are things you control<br />(lights, fans, blinds)</p>
           <button
             onClick={() => setShowDropdown(true)}
-            className="px-3 py-1.5 bg-green-500 text-white text-sm rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300"
+            className="px-4 py-2 bg-emerald-500 text-white text-sm font-medium rounded-lg hover:bg-emerald-600 transition-colors shadow-sm shadow-emerald-500/20"
           >
-            + Add first item
+            <Plus size={16} className="inline mr-1 -mt-0.5" />
+            Add first item
           </button>
         </div>
       ) : (
@@ -117,16 +123,16 @@ export default function ItemSection({ roomId }: Props) {
             return (
             <li
               key={item.id}
-              className={`bg-white rounded border p-2 cursor-pointer transition-all ${
+              className={`bg-slate-50 rounded-xl p-3 cursor-pointer transition-all ${
                 isHighlighted
-                  ? 'border-blue-500 ring-2 ring-blue-400 shadow-[0_0_12px_rgba(59,130,246,0.5)]'
-                  : 'hover:border-blue-400'
+                  ? 'bg-indigo-50 ring-2 ring-indigo-400 shadow-lg shadow-indigo-500/20'
+                  : 'hover:bg-slate-100'
               }`}
               onMouseEnter={() => setHoveredItem(item.id)}
               onMouseLeave={() => setHoveredItem(null)}
             >
               {editingId === item.id ? (
-                <div className="flex gap-1">
+                <div className="flex gap-2">
                   <input
                     type="text"
                     value={editName}
@@ -135,18 +141,20 @@ export default function ItemSection({ roomId }: Props) {
                     onBlur={() => handleSaveEdit(item.id)}
                     placeholder="Name (optional)"
                     autoFocus
-                    className="flex-1 px-2 py-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+                    className="flex-1 px-3 py-1.5 text-sm bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
               ) : (
                 <div className="flex items-center justify-between group">
-                  <div className="flex items-center gap-2 text-sm relative">
+                  <div className="flex items-center gap-3 text-sm relative min-w-0">
                     <button
                       onClick={() => setIconPickerFor(iconPickerFor === item.id ? null : item.id)}
-                      className="text-gray-600 hover:text-blue-500 transition-colors"
+                      className={`p-1.5 rounded-lg transition-colors ${
+                        isHighlighted ? 'bg-indigo-100 text-indigo-600' : 'bg-white text-slate-500 hover:text-indigo-500'
+                      }`}
                       aria-label="Change icon"
                     >
-                      <ItemIcon icon={getItemIcon(item)} size={16} />
+                      <ItemIcon icon={getItemIcon(item)} size={18} />
                     </button>
                     {iconPickerFor === item.id && (
                       <IconPicker
@@ -155,22 +163,22 @@ export default function ItemSection({ roomId }: Props) {
                         onClose={() => setIconPickerFor(null)}
                       />
                     )}
-                    <span>{item.name || ITEM_LABELS[item.type]}</span>
+                    <span className="font-medium text-slate-700 truncate">{item.name || ITEM_LABELS[item.type]}</span>
                   </div>
-                  <div className="flex gap-1 opacity-0 group-hover:opacity-100">
+                  <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       onClick={() => handleStartEdit(item.id, item.name)}
                       aria-label={`Edit ${item.name || ITEM_LABELS[item.type]}`}
-                      className="text-xs px-1 text-gray-500 hover:text-gray-700 focus:outline-none focus:text-gray-700"
+                      className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-white rounded-md transition-colors"
                     >
-                      ✎
+                      <Pencil size={14} />
                     </button>
                     <button
                       onClick={() => setDeleteConfirm({ id: item.id, name: item.name || ITEM_LABELS[item.type], type: item.type })}
                       aria-label={`Delete ${item.name || ITEM_LABELS[item.type]}`}
-                      className="text-xs px-1 text-red-500 hover:text-red-700 focus:outline-none focus:text-red-700"
+                      className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors"
                     >
-                      ×
+                      <Trash2 size={14} />
                     </button>
                   </div>
                 </div>

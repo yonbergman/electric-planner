@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { Pencil, Trash2 } from 'lucide-react'
 import { Box, Module, ModuleType, MODULE_SIZES, MODULE_LABELS } from '@/types'
 import { useStore } from '@/store/useStore'
 import ModuleSlot from './ModuleSlot'
@@ -99,27 +100,27 @@ export default function BoxCard({ box, roomId, onEdit }: Props) {
   const containerStyle = shouldWrap ? { maxWidth: '440px' } : {}
 
   return (
-    <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-200">
+    <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
       {/* Header */}
       <div className="flex justify-between items-start mb-4">
         <div>
-          <h3 className="font-semibold text-gray-800">{box.name}</h3>
-          <p className="text-xs text-gray-500">{box.size} modules</p>
+          <h3 className="font-semibold text-slate-800">{box.name}</h3>
+          <p className="text-xs text-slate-400 mt-0.5">{box.size} slots</p>
         </div>
         <div className="flex gap-1">
           <button
             onClick={onEdit}
             aria-label={`Edit ${box.name}`}
-            className="text-xs px-2 py-1 text-gray-500 hover:bg-gray-100 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300"
+            className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
           >
-            Edit
+            <Pencil size={14} />
           </button>
           <button
             onClick={() => setDeleteConfirm(true)}
             aria-label={`Delete ${box.name}`}
-            className="text-xs px-2 py-1 text-red-500 hover:bg-red-50 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-red-300"
+            className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
           >
-            Delete
+            <Trash2 size={14} />
           </button>
         </div>
       </div>
@@ -160,22 +161,22 @@ export default function BoxCard({ box, roomId, onEdit }: Props) {
                       onAddModule={handleAddModule}
                     />
                     {showAddMenu === idx && !mod && (
-                      <div ref={menuRef} className="absolute top-16 left-0 z-20 bg-white border border-gray-200 rounded-lg shadow-xl p-1.5 min-w-44">
-                        <div className="text-xs font-medium text-gray-500 px-2 py-1">Add module</div>
+                      <div ref={menuRef} className="absolute top-20 left-0 z-20 bg-white border border-slate-200 rounded-xl shadow-xl py-2 min-w-48">
+                        <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-3 py-1.5">Add module</div>
                         {MODULE_TYPES.map((type) => (
                           <button
                             key={type}
                             onClick={() => handleSelectType(idx, type)}
-                            className="flex items-center justify-between w-full text-left px-2 py-1.5 text-sm hover:bg-gray-50 rounded transition-colors"
+                            className="flex items-center justify-between w-full text-left px-3 py-2 text-sm hover:bg-slate-50 transition-colors"
                           >
-                            <span>{MODULE_LABELS[type]}</span>
-                            <span className="text-xs text-gray-400">{MODULE_SIZES[type]}M</span>
+                            <span className="text-slate-700">{MODULE_LABELS[type]}</span>
+                            <span className="text-xs text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">{MODULE_SIZES[type]}M</span>
                           </button>
                         ))}
-                        <hr className="my-1" />
+                        <hr className="my-2 border-slate-100" />
                         <button
                           onClick={() => setShowAddMenu(null)}
-                          className="w-full text-left px-2 py-1 text-xs text-gray-400 hover:bg-gray-50 rounded"
+                          className="w-full text-left px-3 py-1.5 text-xs text-slate-400 hover:bg-slate-50 transition-colors"
                         >
                           Cancel
                         </button>

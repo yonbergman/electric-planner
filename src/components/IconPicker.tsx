@@ -34,9 +34,9 @@ export default function IconPicker({ selectedIcon, onSelect, onClose }: Props) {
   return (
     <div
       ref={ref}
-      className="absolute left-0 top-8 bg-white border rounded-lg shadow-xl p-2 z-20 w-48"
+      className="absolute left-0 top-10 bg-white border border-slate-200 rounded-xl shadow-xl p-3 z-20 w-52"
     >
-      <div className="text-xs font-medium text-gray-500 px-1 pb-1">Choose icon</div>
+      <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-1 pb-2">Choose icon</div>
       <div className="grid grid-cols-5 gap-1">
         {AVAILABLE_ICONS.map((icon) => (
           <button
@@ -45,8 +45,10 @@ export default function IconPicker({ selectedIcon, onSelect, onClose }: Props) {
               onSelect(icon)
               onClose()
             }}
-            className={`p-2 rounded hover:bg-gray-100 transition-colors ${
-              selectedIcon === icon ? 'bg-blue-100 text-blue-600' : 'text-gray-600'
+            className={`p-2 rounded-lg transition-all ${
+              selectedIcon === icon
+                ? 'bg-indigo-100 text-indigo-600 ring-2 ring-indigo-500'
+                : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700'
             }`}
             aria-label={icon}
           >

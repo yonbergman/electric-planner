@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { X, AlertCircle, CheckCircle, Info } from 'lucide-react'
 
 interface Props {
   message: string
@@ -22,21 +23,33 @@ export default function Toast({ message, type = 'error', onClose }: Props) {
     return () => window.removeEventListener('keydown', handleEscape)
   }, [onClose])
 
-  const colors = {
-    error: 'bg-red-600',
-    success: 'bg-green-600',
-    info: 'bg-gray-800',
+  const styles = {
+    error: {
+      bg: 'bg-red-500',
+      icon: AlertCircle,
+    },
+    success: {
+      bg: 'bg-emerald-500',
+      icon: CheckCircle,
+    },
+    info: {
+      bg: 'bg-slate-700',
+      icon: Info,
+    },
   }
 
+  const { bg, icon: Icon } = styles[type]
+
   return (
-    <div className={`fixed bottom-4 left-1/2 -translate-x-1/2 ${colors[type]} text-white px-4 py-2 rounded-lg shadow-lg z-50 flex items-center gap-3`}>
-      <span>{message}</span>
+    <div className={`fixed bottom-4 left-1/2 -translate-x-1/2 ${bg} text-white px-4 py-3 rounded-xl shadow-lg z-50 flex items-center gap-3`}>
+      <Icon size={18} className="flex-shrink-0" />
+      <span className="text-sm font-medium">{message}</span>
       <button
         onClick={onClose}
         aria-label="Dismiss notification"
-        className="text-white/80 hover:text-white"
+        className="p-1 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
       >
-        ×
+        <X size={16} />
       </button>
     </div>
   )
