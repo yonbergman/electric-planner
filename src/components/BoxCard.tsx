@@ -14,15 +14,18 @@ interface Props {
 }
 
 const MODULE_TYPES: ModuleType[] = [
-  'blank',
+  // Switches
   'light-switch-dumb',
+  'light-switch-smart',
+  'dimmer',
+  'shutter',
+  'scenario',
+  // Power & data
   'socket',
   'usb-socket',
   'ethernet',
-  'light-switch-smart',
-  'shutter',
-  'dimmer',
-  'scenario',
+  // Filler
+  'blank',
 ]
 
 export default function BoxCard({ box, roomId, onEdit }: Props) {
