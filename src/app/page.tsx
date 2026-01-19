@@ -39,7 +39,7 @@ export default function Home() {
   return (
     <main className="h-screen flex flex-col bg-slate-50">
       {/* Header */}
-      <header className="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-4 py-3 flex justify-between items-center shadow-lg shadow-indigo-500/20 z-20">
+      <header className="bg-gradient-to-r from-copper-600 to-copper-700 text-white px-4 py-3 flex justify-between items-center shadow-lg shadow-copper-500/20 z-20">
         <div className="flex items-center gap-3">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}

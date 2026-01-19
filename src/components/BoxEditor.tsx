@@ -68,7 +68,7 @@ export default function BoxEditor({ box, roomId, onClose }: Props) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. A1, Main, etc."
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder:text-slate-400"
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-copper-500 focus:border-transparent placeholder:text-slate-400"
               autoFocus
             />
           </div>
@@ -84,7 +84,7 @@ export default function BoxEditor({ box, roomId, onClose }: Props) {
                   onClick={() => setSize(s)}
                   className={`flex-1 py-2.5 rounded-lg font-medium transition-all ${
                     size === s
-                      ? 'bg-indigo-500 text-white shadow-md shadow-indigo-500/30'
+                      ? 'bg-copper-500 text-white shadow-md shadow-copper-500/30'
                       : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                   }`}
                 >
@@ -103,7 +103,7 @@ export default function BoxEditor({ box, roomId, onClose }: Props) {
             </button>
             <button
               type="submit"
-              className="px-5 py-2.5 bg-indigo-500 text-white rounded-lg font-medium hover:bg-indigo-600 shadow-md shadow-indigo-500/30 transition-all"
+              className="px-5 py-2.5 bg-copper-500 text-white rounded-lg font-medium hover:bg-copper-600 shadow-md shadow-copper-500/30 transition-all"
             >
               {box ? 'Save' : 'Add'}
             </button>

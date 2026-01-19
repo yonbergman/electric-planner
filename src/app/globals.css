@@ -1,5 +1,18 @@
 @import "tailwindcss";
 
+@theme {
+  --color-copper-50: #fef7f0;
+  --color-copper-100: #fdeadb;
+  --color-copper-200: #fad3b5;
+  --color-copper-300: #f5b485;
+  --color-copper-400: #ed8f52;
+  --color-copper-500: #e07328;
+  --color-copper-600: #c75d1c;
+  --color-copper-700: #a54a18;
+  --color-copper-800: #863c15;
+  --color-copper-900: #6b3012;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;

@@ -280,7 +280,9 @@ export default function ModuleSlot({ module, slotIndex, boxId, roomId, isSecondS
               {item.name || ITEM_LABELS[item.type]}
             </div>
           )}
-          {!item && <div className="text-gray-400 italic mt-0.5">Not connected</div>}
+          {!item && !['socket', 'scenario', 'usb-socket', 'blank', 'ethernet'].includes(module.type) && (
+            <div className="text-gray-400 italic mt-0.5">Not connected</div>
+          )}
           {module.type === 'scenario' && module.notes && (
             <div className="text-gray-300 mt-1 max-w-48 whitespace-normal">{module.notes}</div>
           )}

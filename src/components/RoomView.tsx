@@ -1,17 +1,20 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus, Package } from 'lucide-react'
+import { Plus, Package, Zap } from 'lucide-react'
 import { useStore } from '@/store/useStore'
 import BoxCard from './BoxCard'
 import BoxEditor from './BoxEditor'
 import ItemSection from './ItemSection'
 import { Box } from '@/types'
 
+type MobileTab = 'boxes' | 'items'
+
 export default function RoomView() {
   const { rooms, boxes, selectedRoomId } = useStore()
   const [editingBox, setEditingBox] = useState<Box | undefined>(undefined)
   const [showNewBox, setShowNewBox] = useState(false)
+  const [mobileTab, setMobileTab] = useState<MobileTab>('boxes')
 
   const selectedRoom = rooms.find((r) => r.id === selectedRoomId)
   const roomBoxes = boxes.filter((b) => b.roomId === selectedRoomId)
@@ -37,15 +40,41 @@ export default function RoomView() {
         <h1 className="text-xl sm:text-2xl font-bold text-slate-800">{selectedRoom.name}</h1>
       </div>
 
-      {/* Content area - responsive stack */}
+      {/* Mobile tabs - only visible below lg breakpoint */}
+      <div className="lg:hidden flex border-b border-slate-200 bg-white">
+        <button
+          onClick={() => setMobileTab('boxes')}
+          className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors ${
+            mobileTab === 'boxes'
+              ? 'text-copper-600 border-b-2 border-copper-500 bg-copper-50/50'
+              : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
+          }`}
+        >
+          <Package size={18} />
+          Boxes
+        </button>
+        <button
+          onClick={() => setMobileTab('items')}
+          className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors ${
+            mobileTab === 'items'
+              ? 'text-copper-600 border-b-2 border-copper-500 bg-copper-50/50'
+              : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
+          }`}
+        >
+          <Zap size={18} />
+          Items
+        </button>
+      </div>
+
+      {/* Content area - tabs on mobile, side-by-side on desktop */}
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-        {/* Boxes Section */}
-        <div className="flex-1 p-4 sm:p-6 overflow-auto">
+        {/* Boxes Section - hidden on mobile when items tab active */}
+        <div className={`flex-1 p-4 sm:p-6 overflow-auto ${mobileTab !== 'boxes' ? 'hidden lg:block' : ''}`}>
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Boxes</h2>
+            <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider hidden lg:block">Boxes</h2>
             <button
               onClick={() => setShowNewBox(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-500 text-white text-sm font-medium rounded-lg hover:bg-indigo-600 transition-colors shadow-sm shadow-indigo-500/20"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-copper-500 text-white text-sm font-medium rounded-lg hover:bg-copper-600 transition-colors shadow-sm shadow-copper-500/20 ml-auto"
             >
               <Plus size={16} />
               Add Box
@@ -61,7 +90,7 @@ export default function RoomView() {
               <p className="text-sm text-slate-400 mb-5">Boxes are electrical switch plates that hold modules</p>
               <button
                 onClick={() => setShowNewBox(true)}
-                className="px-5 py-2.5 bg-indigo-500 text-white text-sm font-medium rounded-lg hover:bg-indigo-600 transition-colors shadow-md shadow-indigo-500/20"
+                className="px-5 py-2.5 bg-copper-500 text-white text-sm font-medium rounded-lg hover:bg-copper-600 transition-colors shadow-md shadow-copper-500/20"
               >
                 <Plus size={16} className="inline mr-1.5 -mt-0.5" />
                 Add first box
@@ -76,8 +105,8 @@ export default function RoomView() {
           )}
         </div>
 
-        {/* Items Section - responsive */}
-        <div className="lg:border-l border-t lg:border-t-0 border-slate-200">
+        {/* Items Section - hidden on mobile when boxes tab active */}
+        <div className={`lg:border-l border-slate-200 ${mobileTab !== 'items' ? 'hidden lg:block' : ''}`}>
           <ItemSection roomId={selectedRoomId!} />
         </div>
       </div>
