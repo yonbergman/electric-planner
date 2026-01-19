@@ -46,8 +46,15 @@ export default function RoomView() {
           </div>
 
           {roomBoxes.length === 0 ? (
-            <div className="text-center text-gray-400 py-12">
-              <p>No boxes yet</p>
+            <div className="text-center py-12">
+              <p className="text-gray-400 mb-2">No boxes yet</p>
+              <p className="text-sm text-gray-400 mb-4">Boxes are electrical switch plates that hold modules</p>
+              <button
+                onClick={() => setShowNewBox(true)}
+                className="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
+              >
+                + Add first box
+              </button>
             </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

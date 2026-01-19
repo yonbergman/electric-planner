@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { Room, Box, Module, Item, ModuleType, ItemType } from '@/types'
+import { Room, Box, Module, Item, ModuleType, ItemType, IconName } from '@/types'
 
 interface StorageData {
   rooms: Room[]
@@ -35,7 +35,7 @@ interface State extends StorageData {
 
   // Item actions
   addItem: (roomId: string, type: ItemType, name?: string) => void
-  updateItem: (id: string, type: ItemType, name?: string) => void
+  updateItem: (id: string, updates: Partial<Pick<Item, 'name' | 'icon'>>) => void
   deleteItem: (id: string) => void
 
   // Import/Export
@@ -50,7 +50,7 @@ async function compress(str: string): Promise<string> {
   const blob = new Blob([str])
   const stream = blob.stream().pipeThrough(new CompressionStream('gzip'))
   const compressed = await new Response(stream).arrayBuffer()
-  return btoa(String.fromCharCode(...new Uint8Array(compressed)))
+  return btoa(String.fromCharCode.apply(null, Array.from(new Uint8Array(compressed))))
 }
 
 // Decompress string
@@ -181,9 +181,9 @@ export const useStore = create<State>()(
           items: [...state.items, { id: generateId(), roomId, type, name }],
         })),
 
-      updateItem: (id, type, name) =>
+      updateItem: (id, updates) =>
         set((state) => ({
-          items: state.items.map((i) => (i.id === id ? { ...i, type, name } : i)),
+          items: state.items.map((i) => (i.id === id ? { ...i, ...updates } : i)),
         })),
 
       deleteItem: (id) =>

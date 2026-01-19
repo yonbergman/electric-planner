@@ -1,18 +1,21 @@
 'use client'
 
+import { useEffect } from 'react'
 import { useStore } from '@/store/useStore'
-import { MODULE_LABELS, ITEM_LABELS, ModuleType } from '@/types'
-
-const ITEM_ICONS: Record<string, string> = {
-  'light': '💡',
-  'ceiling-fan': '🌀',
-  'blinds': '🪟',
-  'leds': '✨',
-  'appliance': '🔌',
-}
+import { MODULE_LABELS, ITEM_LABELS, ModuleType, DEFAULT_ITEM_ICONS } from '@/types'
+import ItemIcon from './ItemIcon'
 
 export default function SummaryPage({ onClose }: { onClose: () => void }) {
   const { rooms, boxes, modules, items } = useStore()
+
+  // Close on escape
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', handleEscape)
+    return () => window.removeEventListener('keydown', handleEscape)
+  }, [onClose])
 
   // Bill of materials - count modules by type
   const moduleCounts = modules.reduce((acc, m) => {
@@ -56,7 +59,13 @@ export default function SummaryPage({ onClose }: { onClose: () => void }) {
       >
         <div className="px-6 py-4 border-b flex justify-between items-center bg-gray-50">
           <h2 className="text-lg font-semibold">Summary</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 text-xl">×</button>
+          <button
+            onClick={onClose}
+            aria-label="Close summary"
+            className="text-gray-500 hover:text-gray-700 text-xl focus:outline-none focus:ring-2 focus:ring-gray-300 rounded"
+          >
+            ×
+          </button>
         </div>
 
         <div className="overflow-auto p-6 space-y-6">
@@ -68,9 +77,10 @@ export default function SummaryPage({ onClose }: { onClose: () => void }) {
                 {unconnectedItems.map(item => {
                   const room = rooms.find(r => r.id === item.roomId)
                   return (
-                    <li key={item.id} className="text-sm text-amber-700">
-                      {ITEM_ICONS[item.type]} {item.name || ITEM_LABELS[item.type]}
-                      <span className="text-amber-500 ml-2">in {room?.name || 'Unknown room'}</span>
+                    <li key={item.id} className="text-sm text-amber-700 flex items-center gap-1">
+                      <ItemIcon icon={item.icon || DEFAULT_ITEM_ICONS[item.type]} size={14} />
+                      {item.name || ITEM_LABELS[item.type]}
+                      <span className="text-amber-500 ml-1">in {room?.name || 'Unknown room'}</span>
                     </li>
                   )
                 })}

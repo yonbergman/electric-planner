@@ -65,9 +65,32 @@ export const ITEM_LABELS: Record<ItemType, string> = {
   'appliance': 'Appliance',
 }
 
+// Available icons for items (Lucide icon names)
+export const AVAILABLE_ICONS = [
+  'Lightbulb', 'Lamp', 'LampDesk', 'LampFloor', 'LampCeiling',
+  'Fan', 'AirVent',
+  'Blinds', 'PanelTop',
+  'Sparkles', 'Star',
+  'Plug', 'Refrigerator', 'WashingMachine', 'Tv', 'Monitor', 'Speaker',
+  'Coffee', 'Microwave', 'CookingPot', 'Heater',
+  'Sun', 'Moon',
+] as const
+
+export type IconName = typeof AVAILABLE_ICONS[number]
+
+// Default icons per item type
+export const DEFAULT_ITEM_ICONS: Record<ItemType, IconName> = {
+  'light': 'Lightbulb',
+  'ceiling-fan': 'Fan',
+  'blinds': 'Blinds',
+  'leds': 'Sparkles',
+  'appliance': 'Plug',
+}
+
 export interface Item {
   id: string
   roomId: string
   name?: string
   type: ItemType
+  icon?: IconName
 }

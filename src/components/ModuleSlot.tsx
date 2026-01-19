@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
-import { Module, ModuleType, ITEM_LABELS, MODULE_LABELS } from '@/types'
+import { useState, useEffect, useRef } from 'react'
+import { Module, ModuleType, ITEM_LABELS, MODULE_LABELS, DEFAULT_ITEM_ICONS } from '@/types'
 import { useStore } from '@/store/useStore'
+import ItemIcon from './ItemIcon'
 
 interface Props {
   module: Module | null
@@ -13,13 +14,6 @@ interface Props {
   onAddModule: (position: number) => void
 }
 
-const ITEM_ICONS: Record<string, string> = {
-  'light': '💡',
-  'ceiling-fan': '🌀',
-  'blinds': '🪟',
-  'leds': '✨',
-  'appliance': '🔌',
-}
 
 function ModuleVisual({ type, hasConnection }: { type: ModuleType; hasConnection: boolean }) {
   const baseClass = "w-full h-full flex items-center justify-center"
@@ -64,15 +58,15 @@ function ModuleVisual({ type, hasConnection }: { type: ModuleType; hasConnection
       return (
         <div className={`${baseClass} bg-[#f5f5f5] relative`}>
           {connectedDot}
-          {/* Israel Type H socket - 3 pins in V shape */}
+          {/* Israel Type H socket - V shape with ground at bottom */}
           <div className="w-14 h-14 bg-gradient-to-b from-white to-[#ececec] rounded-full border-2 border-[#d0d0d0] shadow-[inset_0_2px_6px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.1)] flex items-center justify-center">
-            <div className="relative w-8 h-6">
-              {/* Top pin (ground) */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2.5 bg-[#2a2a2a] rounded-sm shadow-inner" />
-              {/* Bottom left pin */}
-              <div className="absolute bottom-0 left-0.5 w-2 h-2.5 bg-[#2a2a2a] rounded-sm shadow-inner" />
-              {/* Bottom right pin */}
-              <div className="absolute bottom-0 right-0.5 w-2 h-2.5 bg-[#2a2a2a] rounded-sm shadow-inner" />
+            <div className="relative w-9 h-7">
+              {/* Top left hole (live) */}
+              <div className="absolute top-0 left-0 w-3 h-3 bg-[#1a1a1a] rounded-full shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]" />
+              {/* Top right hole (neutral) */}
+              <div className="absolute top-0 right-0 w-3 h-3 bg-[#1a1a1a] rounded-full shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]" />
+              {/* Bottom center hole (ground) - lower than the others */}
+              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3 h-3 bg-[#1a1a1a] rounded-full shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]" />
             </div>
           </div>
         </div>
@@ -188,6 +182,28 @@ export default function ModuleSlot({ module, slotIndex, boxId, roomId, isSecondS
   const [showTooltip, setShowTooltip] = useState(false)
   const [editingNotes, setEditingNotes] = useState(false)
   const [notes, setNotes] = useState('')
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  // Close menu on escape or click outside
+  useEffect(() => {
+    if (!showMenu) return
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowMenu(false)
+    }
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setShowMenu(false)
+      }
+    }
+
+    window.addEventListener('keydown', handleEscape)
+    window.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      window.removeEventListener('keydown', handleEscape)
+      window.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showMenu])
 
   const roomItems = items.filter((i) => i.roomId === roomId)
 
@@ -211,9 +227,9 @@ export default function ModuleSlot({ module, slotIndex, boxId, roomId, isSecondS
   const isDoubleWidth = module.type === 'socket'
   const isHighlighted = hoveredItemId && module.itemId === hoveredItemId
 
-  const getItemDisplay = (i: typeof item) => {
+  const getItemIcon = (i: typeof item) => {
     if (!i) return null
-    return `${ITEM_ICONS[i.type]} ${i.name || ITEM_LABELS[i.type]}`
+    return i.icon || DEFAULT_ITEM_ICONS[i.type]
   }
 
   const handleStartEditNotes = () => {
@@ -233,6 +249,7 @@ export default function ModuleSlot({ module, slotIndex, boxId, roomId, isSecondS
         onClick={() => setShowMenu(!showMenu)}
         onMouseEnter={() => { setShowTooltip(true); setHoveredModule(module.id) }}
         onMouseLeave={() => { setShowTooltip(false); setHoveredModule(null) }}
+        aria-label={`${MODULE_LABELS[module.type]}${item ? ` connected to ${item.name || ITEM_LABELS[item.type]}` : ', click to connect'}`}
         className={`${isDoubleWidth ? 'w-[118px]' : 'w-14'} h-20 rounded-[3px] border overflow-hidden relative group transition-all ${
           isHighlighted
             ? 'border-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.5)] ring-2 ring-blue-400'
@@ -240,12 +257,14 @@ export default function ModuleSlot({ module, slotIndex, boxId, roomId, isSecondS
         }`}
       >
         <ModuleVisual type={module.type} hasConnection={!!item} />
+        {/* Delete button - inside slot to avoid overlap */}
         <span
           onClick={(e) => {
             e.stopPropagation()
             deleteModule(module.id)
           }}
-          className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full text-sm hidden group-hover:flex items-center justify-center cursor-pointer shadow-md hover:bg-red-600"
+          aria-label={`Delete ${MODULE_LABELS[module.type]}`}
+          className="absolute top-0.5 right-0.5 w-5 h-5 bg-red-500/90 text-white rounded text-xs hidden group-hover:flex items-center justify-center cursor-pointer hover:bg-red-600"
         >
           ×
         </span>
@@ -255,7 +274,12 @@ export default function ModuleSlot({ module, slotIndex, boxId, roomId, isSecondS
       {showTooltip && !showMenu && (
         <div className="absolute bottom-[88px] left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap z-20 pointer-events-none shadow-lg">
           <div className="font-medium">{MODULE_LABELS[module.type]}</div>
-          {item && <div className="text-gray-300 mt-0.5">{getItemDisplay(item)}</div>}
+          {item && (
+            <div className="text-gray-300 mt-0.5 flex items-center gap-1">
+              <ItemIcon icon={getItemIcon(item)!} size={12} />
+              {item.name || ITEM_LABELS[item.type]}
+            </div>
+          )}
           {!item && <div className="text-gray-400 italic mt-0.5">Not connected</div>}
           {module.type === 'scenario' && module.notes && (
             <div className="text-gray-300 mt-1 max-w-48 whitespace-normal">{module.notes}</div>
@@ -266,7 +290,7 @@ export default function ModuleSlot({ module, slotIndex, boxId, roomId, isSecondS
 
       {/* Menu */}
       {showMenu && (
-        <div className="absolute top-[88px] left-0 z-10 bg-white border border-gray-200 rounded-lg shadow-xl p-2 min-w-44">
+        <div ref={menuRef} className="absolute top-[88px] left-0 z-10 bg-white border border-gray-200 rounded-lg shadow-xl p-2 min-w-44">
           <div className="text-xs font-semibold mb-1 text-gray-500 px-2">Connect to:</div>
           <button
             onClick={() => {
@@ -284,11 +308,12 @@ export default function ModuleSlot({ module, slotIndex, boxId, roomId, isSecondS
                 assignItem(module.id, i.id)
                 setShowMenu(false)
               }}
-              className={`block w-full text-left px-2 py-1.5 text-sm hover:bg-gray-100 rounded ${
+              className={`flex items-center gap-2 w-full text-left px-2 py-1.5 text-sm hover:bg-gray-100 rounded ${
                 module.itemId === i.id ? 'bg-blue-50' : ''
               }`}
             >
-              {getItemDisplay(i)}
+              <ItemIcon icon={i.icon || DEFAULT_ITEM_ICONS[i.type]} size={14} className="text-gray-600" />
+              {i.name || ITEM_LABELS[i.type]}
             </button>
           ))}
           {roomItems.length === 0 && (
@@ -332,13 +357,13 @@ export default function ModuleSlot({ module, slotIndex, boxId, roomId, isSecondS
             <div className="flex justify-end gap-2 mt-3">
               <button
                 onClick={() => setEditingNotes(false)}
-                className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg"
+                className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveNotes}
-                className="px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                className="px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
               >
                 Save
               </button>
@@ -346,6 +371,7 @@ export default function ModuleSlot({ module, slotIndex, boxId, roomId, isSecondS
           </div>
         </div>
       )}
+
     </div>
   )
 }

@@ -2,12 +2,14 @@
 
 import { useState } from 'react'
 import { useStore } from '@/store/useStore'
+import ConfirmDialog from './ConfirmDialog'
 
 export default function Sidebar() {
   const { rooms, selectedRoomId, addRoom, selectRoom, deleteRoom, updateRoom } = useStore()
   const [newRoomName, setNewRoomName] = useState('')
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editName, setEditName] = useState('')
+  const [deleteConfirm, setDeleteConfirm] = useState<{ id: string; name: string } | null>(null)
 
   const handleAddRoom = () => {
     if (newRoomName.trim()) {
@@ -42,7 +44,8 @@ export default function Sidebar() {
         />
         <button
           onClick={handleAddRoom}
-          className="px-2 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600"
+          aria-label="Add room"
+          className="px-2 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
         >
           +
         </button>
@@ -78,16 +81,18 @@ export default function Sidebar() {
                       e.stopPropagation()
                       handleStartEdit(room.id, room.name)
                     }}
-                    className="text-xs px-1 hover:bg-blue-600 rounded"
+                    aria-label={`Edit ${room.name}`}
+                    className="text-xs px-1 hover:bg-blue-600 rounded focus:outline-none focus:ring-1 focus:ring-white"
                   >
                     ✎
                   </button>
                   <button
                     onClick={(e) => {
                       e.stopPropagation()
-                      deleteRoom(room.id)
+                      setDeleteConfirm({ id: room.id, name: room.name })
                     }}
-                    className="text-xs px-1 hover:bg-red-500 rounded"
+                    aria-label={`Delete ${room.name}`}
+                    className="text-xs px-1 hover:bg-red-500 rounded focus:outline-none focus:ring-1 focus:ring-white"
                   >
                     ×
                   </button>
@@ -98,7 +103,22 @@ export default function Sidebar() {
         ))}
       </ul>
       {rooms.length === 0 && (
-        <p className="text-sm text-gray-400 italic">No rooms yet</p>
+        <div className="text-center py-4">
+          <p className="text-sm text-gray-400 mb-2">No rooms yet</p>
+          <p className="text-xs text-gray-400">Add a room above to get started</p>
+        </div>
+      )}
+
+      {deleteConfirm && (
+        <ConfirmDialog
+          title="Delete room?"
+          message={`"${deleteConfirm.name}" and all its boxes, modules, and items will be deleted.`}
+          onConfirm={() => {
+            deleteRoom(deleteConfirm.id)
+            setDeleteConfirm(null)
+          }}
+          onCancel={() => setDeleteConfirm(null)}
+        />
       )}
     </div>
   )

@@ -1,9 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Box, Module, ModuleType, MODULE_SIZES, MODULE_LABELS } from '@/types'
 import { useStore } from '@/store/useStore'
 import ModuleSlot from './ModuleSlot'
+import ConfirmDialog from './ConfirmDialog'
+import Toast from './Toast'
 
 interface Props {
   box: Box
@@ -26,6 +28,30 @@ const MODULE_TYPES: ModuleType[] = [
 export default function BoxCard({ box, roomId, onEdit }: Props) {
   const { modules, addModule, deleteBox } = useStore()
   const [showAddMenu, setShowAddMenu] = useState<number | null>(null)
+  const [deleteConfirm, setDeleteConfirm] = useState(false)
+  const [toast, setToast] = useState<string | null>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  // Close menu on escape or click outside
+  useEffect(() => {
+    if (showAddMenu === null) return
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowAddMenu(null)
+    }
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setShowAddMenu(null)
+      }
+    }
+
+    window.addEventListener('keydown', handleEscape)
+    window.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      window.removeEventListener('keydown', handleEscape)
+      window.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showAddMenu])
 
   const boxModules = modules.filter((m) => m.boxId === box.id)
 
@@ -50,12 +76,12 @@ export default function BoxCard({ box, roomId, onEdit }: Props) {
   const handleSelectType = (position: number, type: ModuleType) => {
     const slotSize = MODULE_SIZES[type]
     if (slotSize === 2 && position + 1 >= box.size) {
-      alert('Not enough space (needs 2 slots)')
+      setToast('Not enough space (needs 2 slots)')
       setShowAddMenu(null)
       return
     }
     if (slotSize === 2 && slotMap[position + 1] !== null) {
-      alert('Next slot is occupied')
+      setToast('Next slot is occupied')
       setShowAddMenu(null)
       return
     }
@@ -80,13 +106,15 @@ export default function BoxCard({ box, roomId, onEdit }: Props) {
         <div className="flex gap-1">
           <button
             onClick={onEdit}
-            className="text-xs px-2 py-1 text-gray-500 hover:bg-gray-100 rounded transition-colors"
+            aria-label={`Edit ${box.name}`}
+            className="text-xs px-2 py-1 text-gray-500 hover:bg-gray-100 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300"
           >
             Edit
           </button>
           <button
-            onClick={() => deleteBox(box.id)}
-            className="text-xs px-2 py-1 text-red-500 hover:bg-red-50 rounded transition-colors"
+            onClick={() => setDeleteConfirm(true)}
+            aria-label={`Delete ${box.name}`}
+            className="text-xs px-2 py-1 text-red-500 hover:bg-red-50 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-red-300"
           >
             Delete
           </button>
@@ -129,7 +157,7 @@ export default function BoxCard({ box, roomId, onEdit }: Props) {
                       onAddModule={handleAddModule}
                     />
                     {showAddMenu === idx && !mod && (
-                      <div className="absolute top-16 left-0 z-20 bg-white border border-gray-200 rounded-lg shadow-xl p-1.5 min-w-44">
+                      <div ref={menuRef} className="absolute top-16 left-0 z-20 bg-white border border-gray-200 rounded-lg shadow-xl p-1.5 min-w-44">
                         <div className="text-xs font-medium text-gray-500 px-2 py-1">Add module</div>
                         {MODULE_TYPES.map((type) => (
                           <button
@@ -157,6 +185,20 @@ export default function BoxCard({ box, roomId, onEdit }: Props) {
           </div>
         </div>
       </div>
+
+      {deleteConfirm && (
+        <ConfirmDialog
+          title="Delete box?"
+          message={`"${box.name}" and all its modules will be deleted.`}
+          onConfirm={() => {
+            deleteBox(box.id)
+            setDeleteConfirm(false)
+          }}
+          onCancel={() => setDeleteConfirm(false)}
+        />
+      )}
+
+      {toast && <Toast message={toast} onClose={() => setToast(null)} />}
     </div>
   )
 }
