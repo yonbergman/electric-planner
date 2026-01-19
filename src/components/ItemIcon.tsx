@@ -8,7 +8,7 @@ import {
   Plug, Refrigerator, WashingMachine, Tv, Monitor, Speaker,
   Coffee, Microwave, CookingPot, Heater,
   Sun, Moon,
-  Gamepad2,
+  Gamepad2, Toilet, Router, Footprints,
   LucideIcon
 } from 'lucide-react'
 import { IconName } from '@/types'
@@ -39,6 +39,9 @@ const ICON_MAP: Record<IconName, LucideIcon> = {
   Sun,
   Moon,
   Gamepad2,
+  Toilet,
+  Router,
+  Footprints,
 }
 
 interface Props {

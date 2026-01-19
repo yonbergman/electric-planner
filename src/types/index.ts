@@ -74,7 +74,7 @@ export const AVAILABLE_ICONS = [
   'Plug', 'Refrigerator', 'WashingMachine', 'Tv', 'Monitor', 'Speaker',
   'Coffee', 'Microwave', 'CookingPot', 'Heater',
   'Sun', 'Moon',
-  'Gamepad2',
+  'Gamepad2', 'Toilet', 'Router', 'Footprints',
 ] as const
 
 export type IconName = typeof AVAILABLE_ICONS[number]
