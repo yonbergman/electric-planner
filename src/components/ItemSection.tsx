@@ -78,13 +78,13 @@ export default function ItemSection({ roomId }: Props) {
             onClick={() => setShowDropdown(!showDropdown)}
             aria-label="Add item"
             aria-expanded={showDropdown}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500 text-white text-sm font-medium rounded-lg hover:bg-emerald-600 transition-colors shadow-sm shadow-emerald-500/20"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-500 text-white text-sm font-medium rounded-lg hover:bg-indigo-600 transition-colors shadow-sm shadow-indigo-500/20"
           >
             <Plus size={16} />
             Add
           </button>
           {showDropdown && (
-            <div className="absolute right-0 top-10 bg-white border border-slate-200 rounded-xl shadow-xl py-2 z-10 min-w-44">
+            <div className="absolute right-0 top-10 bg-white border border-slate-200 rounded-lg shadow-xl py-2 z-10 min-w-44">
               {ITEM_TYPES.map((type) => (
                 <button
                   key={type}
@@ -102,14 +102,14 @@ export default function ItemSection({ roomId }: Props) {
 
       {roomItems.length === 0 ? (
         <div className="text-center py-10">
-          <div className="w-12 h-12 mx-auto mb-3 bg-slate-100 rounded-xl flex items-center justify-center">
+          <div className="w-12 h-12 mx-auto mb-3 bg-slate-100 rounded-lg flex items-center justify-center">
             <Zap size={24} className="text-slate-400" />
           </div>
           <p className="text-sm text-slate-500 mb-1">No items yet</p>
           <p className="text-xs text-slate-400 mb-4">Items are things you control<br />(lights, fans, blinds)</p>
           <button
             onClick={() => setShowDropdown(true)}
-            className="px-4 py-2 bg-emerald-500 text-white text-sm font-medium rounded-lg hover:bg-emerald-600 transition-colors shadow-sm shadow-emerald-500/20"
+            className="px-4 py-2 bg-indigo-500 text-white text-sm font-medium rounded-lg hover:bg-indigo-600 transition-colors shadow-sm shadow-indigo-500/20"
           >
             <Plus size={16} className="inline mr-1 -mt-0.5" />
             Add first item
@@ -123,7 +123,7 @@ export default function ItemSection({ roomId }: Props) {
             return (
             <li
               key={item.id}
-              className={`bg-slate-50 rounded-xl p-3 cursor-pointer transition-all ${
+              className={`bg-slate-50 rounded-lg p-3 cursor-pointer transition-all ${
                 isHighlighted
                   ? 'bg-indigo-50 ring-2 ring-indigo-400 shadow-lg shadow-indigo-500/20'
                   : 'hover:bg-slate-100'

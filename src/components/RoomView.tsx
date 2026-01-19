@@ -20,7 +20,7 @@ export default function RoomView() {
     return (
       <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
         <div className="text-center px-4">
-          <div className="w-16 h-16 mx-auto mb-4 bg-slate-200 rounded-2xl flex items-center justify-center">
+          <div className="w-16 h-16 mx-auto mb-4 bg-slate-200 rounded-lg flex items-center justify-center">
             <Package size={32} className="text-slate-400" />
           </div>
           <p className="text-lg text-slate-500 font-medium">Select a room from the sidebar</p>
@@ -54,7 +54,7 @@ export default function RoomView() {
 
           {roomBoxes.length === 0 ? (
             <div className="text-center py-16">
-              <div className="w-14 h-14 mx-auto mb-4 bg-slate-100 rounded-2xl flex items-center justify-center">
+              <div className="w-14 h-14 mx-auto mb-4 bg-slate-100 rounded-lg flex items-center justify-center">
                 <Package size={28} className="text-slate-400" />
               </div>
               <p className="text-slate-500 font-medium mb-1">No boxes yet</p>

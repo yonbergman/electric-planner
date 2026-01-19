@@ -41,7 +41,7 @@ export default function Toast({ message, type = 'error', onClose }: Props) {
   const { bg, icon: Icon } = styles[type]
 
   return (
-    <div className={`fixed bottom-4 left-1/2 -translate-x-1/2 ${bg} text-white px-4 py-3 rounded-xl shadow-lg z-50 flex items-center gap-3`}>
+    <div className={`fixed bottom-4 left-1/2 -translate-x-1/2 ${bg} text-white px-4 py-3 rounded-lg shadow-lg z-50 flex items-center gap-3`}>
       <Icon size={18} className="flex-shrink-0" />
       <span className="text-sm font-medium">{message}</span>
       <button

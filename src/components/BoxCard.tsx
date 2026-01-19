@@ -100,7 +100,7 @@ export default function BoxCard({ box, roomId, onEdit }: Props) {
   const containerStyle = shouldWrap ? { maxWidth: '440px' } : {}
 
   return (
-    <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+    <div className="bg-white rounded-lg p-5 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
       {/* Header */}
       <div className="flex justify-between items-start mb-4">
         <div>
@@ -161,7 +161,7 @@ export default function BoxCard({ box, roomId, onEdit }: Props) {
                       onAddModule={handleAddModule}
                     />
                     {showAddMenu === idx && !mod && (
-                      <div ref={menuRef} className="absolute top-20 left-0 z-20 bg-white border border-slate-200 rounded-xl shadow-xl py-2 min-w-48">
+                      <div ref={menuRef} className="absolute top-20 left-0 z-20 bg-white border border-slate-200 rounded-lg shadow-xl py-2 min-w-48">
                         <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-3 py-1.5">Add module</div>
                         {MODULE_TYPES.map((type) => (
                           <button

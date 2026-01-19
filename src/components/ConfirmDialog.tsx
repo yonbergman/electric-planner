@@ -32,14 +32,14 @@ export default function ConfirmDialog({ title, message, confirmLabel = 'Delete',
       onClick={onCancel}
     >
       <div
-        className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl"
+        className="bg-white rounded-lg p-6 w-full max-w-sm shadow-2xl"
         onClick={(e) => e.stopPropagation()}
         role="alertdialog"
         aria-labelledby="confirm-title"
         aria-describedby="confirm-message"
       >
         <div className="flex items-start gap-4 mb-4">
-          <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0">
+          <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
             <AlertTriangle size={20} className="text-red-500" />
           </div>
           <div>
@@ -50,14 +50,14 @@ export default function ConfirmDialog({ title, message, confirmLabel = 'Delete',
         <div className="flex gap-3 justify-end">
           <button
             onClick={onCancel}
-            className="px-5 py-2.5 text-slate-600 hover:bg-slate-100 rounded-xl font-medium transition-colors"
+            className="px-5 py-2.5 text-slate-600 hover:bg-slate-100 rounded-lg font-medium transition-colors"
           >
             Cancel
           </button>
           <button
             ref={confirmRef}
             onClick={onConfirm}
-            className="px-5 py-2.5 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 shadow-md shadow-red-500/30 transition-all"
+            className="px-5 py-2.5 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 shadow-md shadow-red-500/30 transition-all"
           >
             {confirmLabel}
           </button>

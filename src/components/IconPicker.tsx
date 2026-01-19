@@ -34,7 +34,7 @@ export default function IconPicker({ selectedIcon, onSelect, onClose }: Props) {
   return (
     <div
       ref={ref}
-      className="absolute left-0 top-10 bg-white border border-slate-200 rounded-xl shadow-xl p-3 z-20 w-52"
+      className="absolute left-0 top-10 bg-white border border-slate-200 rounded-lg shadow-xl p-3 z-20 w-52"
     >
       <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-1 pb-2">Choose icon</div>
       <div className="grid grid-cols-5 gap-1">
