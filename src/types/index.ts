@@ -67,13 +67,14 @@ export const ITEM_LABELS: Record<ItemType, string> = {
 
 // Available icons for items (Lucide icon names)
 export const AVAILABLE_ICONS = [
-  'Lightbulb', 'Lamp', 'LampDesk', 'LampFloor', 'LampCeiling',
+  'Lightbulb', 'Lamp', 'LampDesk', 'LampFloor', 'LampCeiling', 'LampWallUp',
   'Fan', 'AirVent',
   'Blinds', 'PanelTop',
   'Sparkles', 'Star',
   'Plug', 'Refrigerator', 'WashingMachine', 'Tv', 'Monitor', 'Speaker',
   'Coffee', 'Microwave', 'CookingPot', 'Heater',
   'Sun', 'Moon',
+  'Gamepad2',
 ] as const
 
 export type IconName = typeof AVAILABLE_ICONS[number]

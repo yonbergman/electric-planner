@@ -60,13 +60,13 @@ function ModuleVisual({ type, hasConnection }: { type: ModuleType; hasConnection
           {connectedDot}
           {/* Israel Type H socket - V shape with ground at bottom */}
           <div className="w-14 h-14 bg-gradient-to-b from-white to-[#ececec] rounded-full border-2 border-[#d0d0d0] shadow-[inset_0_2px_6px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.1)] flex items-center justify-center">
-            <div className="relative w-9 h-7">
+            <div className="relative w-8 h-6 mt-1">
               {/* Top left hole (live) */}
-              <div className="absolute top-0 left-0 w-3 h-3 bg-[#1a1a1a] rounded-full shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]" />
+              <div className="absolute top-0 left-0 w-2.5 h-2.5 bg-[#1a1a1a] rounded-full shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]" />
               {/* Top right hole (neutral) */}
-              <div className="absolute top-0 right-0 w-3 h-3 bg-[#1a1a1a] rounded-full shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]" />
+              <div className="absolute top-0 right-0 w-2.5 h-2.5 bg-[#1a1a1a] rounded-full shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]" />
               {/* Bottom center hole (ground) - lower than the others */}
-              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3 h-3 bg-[#1a1a1a] rounded-full shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]" />
+              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-[#1a1a1a] rounded-full shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]" />
             </div>
           </div>
         </div>

@@ -1,13 +1,14 @@
 'use client'
 
 import {
-  Lightbulb, Lamp, LampDesk, LampFloor, LampCeiling,
+  Lightbulb, Lamp, LampDesk, LampFloor, LampCeiling, LampWallUp,
   Fan, AirVent,
   Blinds, PanelTop,
   Sparkles, Star,
   Plug, Refrigerator, WashingMachine, Tv, Monitor, Speaker,
   Coffee, Microwave, CookingPot, Heater,
   Sun, Moon,
+  Gamepad2,
   LucideIcon
 } from 'lucide-react'
 import { IconName } from '@/types'
@@ -18,6 +19,7 @@ const ICON_MAP: Record<IconName, LucideIcon> = {
   LampDesk,
   LampFloor,
   LampCeiling,
+  LampWallUp,
   Fan,
   AirVent,
   Blinds,
@@ -36,6 +38,7 @@ const ICON_MAP: Record<IconName, LucideIcon> = {
   Heater,
   Sun,
   Moon,
+  Gamepad2,
 }
 
 interface Props {
