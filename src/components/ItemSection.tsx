@@ -7,7 +7,7 @@ import ConfirmDialog from './ConfirmDialog'
 import ItemIcon from './ItemIcon'
 import IconPicker from './IconPicker'
 
-const ITEM_TYPES: ItemType[] = ['light', 'ceiling-fan', 'blinds', 'leds', 'appliance']
+const ITEM_TYPES: ItemType[] = ['light', 'ceiling-light', 'ceiling-fan', 'blinds', 'leds', 'appliance']
 
 interface Props {
   roomId: string

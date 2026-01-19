@@ -55,10 +55,11 @@ export interface Module {
   notes?: string // for scenario switches
 }
 
-export type ItemType = 'light' | 'ceiling-fan' | 'blinds' | 'leds' | 'appliance'
+export type ItemType = 'light' | 'ceiling-light' | 'ceiling-fan' | 'blinds' | 'leds' | 'appliance'
 
 export const ITEM_LABELS: Record<ItemType, string> = {
   'light': 'Light',
+  'ceiling-light': 'Ceiling Light',
   'ceiling-fan': 'Ceiling Fan',
   'blinds': 'Blinds',
   'leds': 'LEDs',
@@ -82,6 +83,7 @@ export type IconName = typeof AVAILABLE_ICONS[number]
 // Default icons per item type
 export const DEFAULT_ITEM_ICONS: Record<ItemType, IconName> = {
   'light': 'Lightbulb',
+  'ceiling-light': 'LampCeiling',
   'ceiling-fan': 'Fan',
   'blinds': 'Blinds',
   'leds': 'Sparkles',
