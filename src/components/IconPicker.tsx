@@ -47,7 +47,7 @@ export default function IconPicker({ selectedIcon, onSelect, onClose }: Props) {
             }}
             className={`p-2 rounded-lg transition-all ${
               selectedIcon === icon
-                ? 'bg-copper-100 text-copper-600 ring-2 ring-copper-500'
+                ? 'bg-silver-100 text-silver-600 ring-2 ring-silver-500'
                 : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700'
             }`}
             aria-label={icon}

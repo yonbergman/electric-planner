@@ -43,7 +43,7 @@ export default function MapView() {
   const containerRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const { floorPlans, roomPolygons, mapPositions, rooms, boxes, items, modules, addFloorPlan, deleteFloorPlan, setMapPosition, updateFloorPlan, deleteMapPosition } = useStore()
+  const { floorPlans, roomPolygons, mapPositions, rooms, boxes, items, modules, addFloorPlan, deleteFloorPlan, setMapPosition, updateMapPosition, updateFloorPlan, deleteMapPosition } = useStore()
 
   const [selectedFloorPlan, setSelectedFloorPlan] = useState<string | null>(null)
   const [drawMode, setDrawMode] = useState<DrawMode>('pan')
@@ -60,6 +60,7 @@ export default function MapView() {
   const [editingFloorName, setEditingFloorName] = useState<string | null>(null)
   const [floorNameInput, setFloorNameInput] = useState('')
   const [imageOpacity, setImageOpacity] = useState(1)
+  const [imageScale, setImageScale] = useState(1)
   const [contextMenu, setContextMenu] = useState<ContextMenu | null>(null)
 
   const currentFloorPlan = floorPlans.find(f => f.id === selectedFloorPlan)
@@ -170,15 +171,17 @@ export default function MapView() {
     ctx.translate(pan.x, pan.y)
     ctx.scale(zoom, zoom)
 
-    // Draw floor plan image with opacity
+    // Draw floor plan image with opacity and scale
     const img = loadedImages.get(currentFloorPlan.id)
+    const scaledWidth = currentFloorPlan.width * imageScale
+    const scaledHeight = currentFloorPlan.height * imageScale
     if (img) {
       ctx.globalAlpha = imageOpacity
-      ctx.drawImage(img, 0, 0, currentFloorPlan.width, currentFloorPlan.height)
+      ctx.drawImage(img, 0, 0, scaledWidth, scaledHeight)
       ctx.globalAlpha = 1
     } else {
       ctx.fillStyle = '#f1f5f9'
-      ctx.fillRect(0, 0, currentFloorPlan.width, currentFloorPlan.height)
+      ctx.fillRect(0, 0, scaledWidth, scaledHeight)
     }
 
     // Draw boxes and items on map
@@ -197,8 +200,9 @@ export default function MapView() {
             connectedModules.forEach(mod => {
               const item = items.find(i => i.id === mod.itemId)
               if (item) {
-                const itemPos = mapPositions.find(p => p.entityId === item.id && p.floorPlanId === selectedFloorPlan)
-                if (itemPos) {
+                // Get all positions for this item (can be placed multiple times)
+                const itemPositions = mapPositions.filter(p => p.entityId === item.id && p.floorPlanId === selectedFloorPlan)
+                itemPositions.forEach(itemPos => {
                   ctx.beginPath()
                   ctx.moveTo(pos.x, pos.y)
                   ctx.lineTo(itemPos.x, itemPos.y)
@@ -207,7 +211,7 @@ export default function MapView() {
                   ctx.setLineDash([5 / zoom, 5 / zoom])
                   ctx.stroke()
                   ctx.setLineDash([])
-                }
+                })
               }
             })
           }
@@ -236,8 +240,9 @@ export default function MapView() {
             connectedModules.forEach(mod => {
               const box = boxes.find(b => b.id === mod.boxId)
               if (box) {
-                const boxPos = mapPositions.find(p => p.entityId === box.id && p.floorPlanId === selectedFloorPlan)
-                if (boxPos) {
+                // Get all positions for this box (for consistency with items)
+                const boxPositions = mapPositions.filter(p => p.entityId === box.id && p.floorPlanId === selectedFloorPlan)
+                boxPositions.forEach(boxPos => {
                   ctx.beginPath()
                   ctx.moveTo(pos.x, pos.y)
                   ctx.lineTo(boxPos.x, boxPos.y)
@@ -246,7 +251,7 @@ export default function MapView() {
                   ctx.setLineDash([5 / zoom, 5 / zoom])
                   ctx.stroke()
                   ctx.setLineDash([])
-                }
+                })
               }
             })
           }
@@ -277,7 +282,7 @@ export default function MapView() {
     })
 
     ctx.restore()
-  }, [currentFloorPlan, pan, zoom, mapPositions, boxes, items, modules, selectedFloorPlan, loadedImages, hoveredEntity, selectedEntity, iconImages, imageOpacity])
+  }, [currentFloorPlan, pan, zoom, mapPositions, boxes, items, modules, selectedFloorPlan, loadedImages, hoveredEntity, selectedEntity, iconImages, imageOpacity, imageScale])
 
   useEffect(() => {
     draw()
@@ -380,11 +385,11 @@ export default function MapView() {
   const handleMouseMove = (e: React.MouseEvent) => {
     const pos = screenToCanvas(e.clientX, e.clientY)
 
-    if (movingEntity && selectedFloorPlan) {
-      // Move the entity
+    if (movingEntity) {
+      // Move the entity by updating its existing position
       const newX = pos.x + movingEntity.offsetX
       const newY = pos.y + movingEntity.offsetY
-      setMapPosition(selectedFloorPlan, movingEntity.type, movingEntity.id, newX, newY)
+      updateMapPosition(movingEntity.positionId, newX, newY)
     } else if (isPanning) {
       setPan(prev => ({
         x: prev.x + (e.clientX - lastMousePos.x),
@@ -432,6 +437,24 @@ export default function MapView() {
       if (selectedEntity?.type === contextMenu.entityType && selectedEntity?.id === contextMenu.entityId) {
         setSelectedEntity(null)
       }
+    }
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'copy'
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    if (!selectedFloorPlan) return
+
+    try {
+      const data = JSON.parse(e.dataTransfer.getData('application/json')) as DraggedEntity
+      const pos = screenToCanvas(e.clientX, e.clientY)
+      setMapPosition(selectedFloorPlan, data.type, data.id, pos.x, pos.y)
+    } catch {
+      // Invalid drop data
     }
   }
 
@@ -483,7 +506,7 @@ export default function MapView() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="flex items-center gap-2 px-3 py-2 bg-copper-600 text-white rounded-lg hover:bg-copper-700 transition-colors text-sm font-medium"
+            className="flex items-center gap-2 px-3 py-2 bg-silver-600 text-white rounded-lg hover:bg-silver-700 transition-colors text-sm font-medium"
           >
             <Upload size={16} />
             Upload Floor Plan
@@ -516,7 +539,7 @@ export default function MapView() {
                         setFloorNameInput('')
                       }
                     }}
-                    className="px-3 py-2 border border-copper-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-copper-500"
+                    className="px-3 py-2 border border-silver-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-silver-500"
                     autoFocus
                   />
                 </>
@@ -563,7 +586,7 @@ export default function MapView() {
 
             <button
               onClick={() => setDrawMode('pan')}
-              className={`p-2 rounded-lg transition-colors ${drawMode === 'pan' ? 'bg-copper-100 text-copper-700' : 'hover:bg-slate-100'}`}
+              className={`p-2 rounded-lg transition-colors ${drawMode === 'pan' ? 'bg-silver-100 text-silver-700' : 'hover:bg-slate-100'}`}
               title="Pan mode"
             >
               <Hand size={18} />
@@ -579,10 +602,24 @@ export default function MapView() {
                 max="100"
                 value={imageOpacity * 100}
                 onChange={(e) => setImageOpacity(parseInt(e.target.value) / 100)}
-                className="w-24 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-copper-600"
+                className="w-24 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-silver-600"
                 title={`Floor plan opacity: ${Math.round(imageOpacity * 100)}%`}
               />
               <span className="text-sm text-slate-600 w-8">{Math.round(imageOpacity * 100)}%</span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <label className="text-sm text-slate-600">Scale:</label>
+              <input
+                type="range"
+                min="10"
+                max="200"
+                value={imageScale * 100}
+                onChange={(e) => setImageScale(parseInt(e.target.value) / 100)}
+                className="w-24 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-silver-600"
+                title={`Floor plan scale: ${Math.round(imageScale * 100)}%`}
+              />
+              <span className="text-sm text-slate-600 w-10">{Math.round(imageScale * 100)}%</span>
             </div>
           </>
         )}
@@ -600,7 +637,7 @@ export default function MapView() {
               <button
                 onClick={() => setHidePlaced(!hidePlaced)}
                 className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
-                  hidePlaced ? 'bg-copper-100 text-copper-700' : 'hover:bg-slate-100'
+                  hidePlaced ? 'bg-silver-100 text-silver-700' : 'hover:bg-slate-100'
                 }`}
               >
                 <Filter size={16} />
@@ -615,7 +652,7 @@ export default function MapView() {
                   const roomItems = items.filter(i => i.roomId === room.id)
 
                   const visibleBoxes = hidePlaced
-                    ? roomBoxes.filter(b => !mapPositions.some(p => p.entityId === b.id && p.floorPlanId === selectedFloorPlan))
+                    ? roomBoxes.filter(b => !mapPositions.some(p => p.entityType === 'box' && p.entityId === b.id && p.floorPlanId === selectedFloorPlan))
                     : roomBoxes
 
                   // For items, we never hide them since they can be placed multiple times
@@ -631,16 +668,21 @@ export default function MapView() {
                         <div className="space-y-1 mb-3">
                           <div className="text-xs text-slate-500 mb-1">Boxes</div>
                           {visibleBoxes.map(box => {
-                            const isPlaced = mapPositions.some(p => p.entityId === box.id && p.floorPlanId === selectedFloorPlan)
+                            const isPlaced = mapPositions.some(p => p.entityType === 'box' && p.entityId === box.id && p.floorPlanId === selectedFloorPlan)
                             return (
                               <button
                                 key={box.id}
+                                draggable
+                                onDragStart={(e) => {
+                                  e.dataTransfer.setData('application/json', JSON.stringify({ type: 'box', id: box.id, name: box.name }))
+                                  e.dataTransfer.effectAllowed = 'copy'
+                                }}
                                 onClick={() => {
                                   setDraggedEntity({ type: 'box', id: box.id, name: box.name })
                                   setDrawMode('place')
                                 }}
-                                className={`w-full text-left px-3 py-2 rounded-lg hover:bg-copper-50 transition-colors flex items-center gap-2 ${
-                                  draggedEntity?.id === box.id ? 'bg-copper-100' : ''
+                                className={`w-full text-left px-3 py-2 rounded-lg hover:bg-silver-50 transition-colors flex items-center gap-2 ${
+                                  draggedEntity?.id === box.id ? 'bg-silver-100' : ''
                                 }`}
                               >
                                 <BoxIcon size={14} className="text-orange-600 flex-shrink-0" />
@@ -663,6 +705,11 @@ export default function MapView() {
                             return (
                               <button
                                 key={item.id}
+                                draggable
+                                onDragStart={(e) => {
+                                  e.dataTransfer.setData('application/json', JSON.stringify({ type: 'item', id: item.id, name: item.name || 'Item' }))
+                                  e.dataTransfer.effectAllowed = 'copy'
+                                }}
                                 onClick={() => {
                                   setDraggedEntity({ type: 'item', id: item.id, name: item.name || 'Item' })
                                   setDrawMode('place')
@@ -689,7 +736,12 @@ export default function MapView() {
           </div>
 
           {/* Canvas */}
-          <div ref={containerRef} className="flex-1 relative">
+          <div
+            ref={containerRef}
+            className="flex-1 relative"
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+          >
             <canvas
               ref={canvasRef}
               onWheel={handleWheel}
@@ -856,7 +908,7 @@ export default function MapView() {
             <p className="text-sm text-slate-500 mb-4">Upload a floor plan image to get started</p>
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="px-4 py-2 bg-copper-600 text-white rounded-lg hover:bg-copper-700 transition-colors"
+              className="px-4 py-2 bg-silver-600 text-white rounded-lg hover:bg-silver-700 transition-colors"
             >
               Upload Floor Plan
             </button>

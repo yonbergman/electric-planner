@@ -1,12 +1,13 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { Menu, X, Share2, FileText, Map } from 'lucide-react'
-import Sidebar from '@/components/Sidebar'
-import RoomView from '@/components/RoomView'
 import MapView from '@/components/MapView'
+import { PlugZapIcon } from '@/components/PlugZap'
+import RoomView from '@/components/RoomView'
+import Sidebar from '@/components/Sidebar'
 import SummaryPage from '@/components/SummaryPage'
-import { loadFromUrl, generateShareUrl } from '@/store/useStore'
+import { generateShareUrl, loadFromUrl } from '@/store/useStore'
+import { FileText, Map, Menu, Share2, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 type ViewMode = 'rooms' | 'map'
 
@@ -43,7 +44,7 @@ export default function Home() {
   return (
     <main className="h-screen flex flex-col bg-slate-50">
       {/* Header */}
-      <header className="bg-gradient-to-r from-copper-600 to-copper-700 text-white px-4 py-3 flex justify-between items-center shadow-lg shadow-copper-500/20 z-20">
+      <header className="brushed-silver text-white px-4 py-3 flex justify-between items-center shadow-lg shadow-silver-700/30 z-20">
         <div className="flex items-center gap-3">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -52,7 +53,7 @@ export default function Home() {
           >
             {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
-          <h1 className="text-lg font-bold tracking-tight font-[family-name:var(--font-space-grotesk)]">Boxwise</h1>
+          <PlugZapIcon size={24} className="flex items-center gap-2 cursor-default group" />
         </div>
         <div className="flex gap-2">
           <button

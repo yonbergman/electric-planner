@@ -46,7 +46,7 @@ export default function RoomView() {
           onClick={() => setMobileTab('boxes')}
           className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors ${
             mobileTab === 'boxes'
-              ? 'text-copper-600 border-b-2 border-copper-500 bg-copper-50/50'
+              ? 'text-silver-600 border-b-2 border-silver-500 bg-silver-50/50'
               : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
           }`}
         >
@@ -57,7 +57,7 @@ export default function RoomView() {
           onClick={() => setMobileTab('items')}
           className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-colors ${
             mobileTab === 'items'
-              ? 'text-copper-600 border-b-2 border-copper-500 bg-copper-50/50'
+              ? 'text-silver-600 border-b-2 border-silver-500 bg-silver-50/50'
               : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
           }`}
         >
@@ -74,7 +74,7 @@ export default function RoomView() {
             <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider hidden lg:block">Boxes</h2>
             <button
               onClick={() => setShowNewBox(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-copper-500 text-white text-sm font-medium rounded-lg hover:bg-copper-600 transition-colors shadow-sm shadow-copper-500/20 ml-auto"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-silver-500 text-white text-sm font-medium rounded-lg hover:bg-silver-600 transition-colors shadow-sm shadow-silver-500/20 ml-auto"
             >
               <Plus size={16} />
               Add Box
@@ -90,7 +90,7 @@ export default function RoomView() {
               <p className="text-sm text-slate-400 mb-5">Boxes are electrical switch plates that hold modules</p>
               <button
                 onClick={() => setShowNewBox(true)}
-                className="px-5 py-2.5 bg-copper-500 text-white text-sm font-medium rounded-lg hover:bg-copper-600 transition-colors shadow-md shadow-copper-500/20"
+                className="px-5 py-2.5 bg-silver-500 text-white text-sm font-medium rounded-lg hover:bg-silver-600 transition-colors shadow-md shadow-silver-500/20"
               >
                 <Plus size={16} className="inline mr-1.5 -mt-0.5" />
                 Add first box

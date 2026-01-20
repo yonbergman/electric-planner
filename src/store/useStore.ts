@@ -49,6 +49,7 @@ interface State extends StorageData {
   updateRoomPolygon: (id: string, points: { x: number; y: number }[]) => void
   deleteRoomPolygon: (id: string) => void
   setMapPosition: (floorPlanId: string, entityType: 'box' | 'item', entityId: string, x: number, y: number) => void
+  updateMapPosition: (id: string, x: number, y: number) => void
   deleteMapPosition: (id: string) => void
 
   // Import/Export
@@ -278,6 +279,13 @@ export const useStore = create<State>()(
             ],
           }
         }),
+
+      updateMapPosition: (id, x, y) =>
+        set((state) => ({
+          mapPositions: state.mapPositions.map((m) =>
+            m.id === id ? { ...m, x, y } : m
+          ),
+        })),
 
       deleteMapPosition: (id) =>
         set((state) => ({

@@ -115,20 +115,20 @@ export default function Sidebar({ onNavigate }: Props) {
                     if (e.key === 'Escape') setEditingId(null)
                   }}
                   onBlur={() => handleSaveEdit(room.id)}
-                  className="flex-1 px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-copper-500"
+                  className="flex-1 px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-silver-500"
                 />
               </div>
             ) : (
               <div
                 className={`flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer group transition-all ${
                   selectedRoomId === room.id
-                    ? 'bg-copper-500 text-white shadow-md shadow-copper-500/30'
+                    ? 'bg-silver-500 text-white shadow-md shadow-silver-500/30'
                     : 'hover:bg-slate-100 text-slate-700'
                 }`}
                 onClick={() => handleSelectRoom(room.id)}
               >
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <RoomIcon size={16} className={selectedRoomId === room.id ? 'text-copper-200' : 'text-slate-400'} />
+                  <RoomIcon size={16} className={selectedRoomId === room.id ? 'text-silver-200' : 'text-slate-400'} />
                   <span className="text-sm font-medium truncate">{room.name}</span>
                 </div>
                 <div className={`flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity ${
@@ -142,7 +142,7 @@ export default function Sidebar({ onNavigate }: Props) {
                     aria-label={`Edit ${room.name}`}
                     className={`p-1.5 rounded-md transition-colors ${
                       selectedRoomId === room.id
-                        ? 'hover:bg-copper-400'
+                        ? 'hover:bg-silver-400'
                         : 'hover:bg-slate-200'
                     }`}
                   >
@@ -183,7 +183,7 @@ export default function Sidebar({ onNavigate }: Props) {
       <div className="p-3 border-t border-slate-100">
         <button
           onClick={handleAddRoom}
-          className="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-sm font-medium text-slate-600 hover:text-copper-600 hover:bg-copper-50 rounded-lg transition-colors"
+          className="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-sm font-medium text-slate-600 hover:text-silver-600 hover:bg-silver-50 rounded-lg transition-colors"
         >
           <Plus size={18} />
           Add Room
