@@ -43,7 +43,7 @@ export default function MapView() {
   const containerRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const { floorPlans, roomPolygons, mapPositions, rooms, boxes, items, modules, addFloorPlan, deleteFloorPlan, setMapPosition, updateMapPosition, updateFloorPlan, deleteMapPosition } = useStore()
+  const { floorPlans, roomPolygons, mapPositions, rooms, boxes, items, modules, addFloorPlan, deleteFloorPlan, setMapPosition, updateMapPosition, updateFloorPlan, deleteMapPosition, mapImageOpacity, mapImageScale, setMapImageOpacity, setMapImageScale } = useStore()
 
   const [selectedFloorPlan, setSelectedFloorPlan] = useState<string | null>(null)
   const [drawMode, setDrawMode] = useState<DrawMode>('pan')
@@ -59,8 +59,6 @@ export default function MapView() {
   const [hidePlaced, setHidePlaced] = useState(false)
   const [editingFloorName, setEditingFloorName] = useState<string | null>(null)
   const [floorNameInput, setFloorNameInput] = useState('')
-  const [imageOpacity, setImageOpacity] = useState(1)
-  const [imageScale, setImageScale] = useState(1)
   const [contextMenu, setContextMenu] = useState<ContextMenu | null>(null)
 
   const currentFloorPlan = floorPlans.find(f => f.id === selectedFloorPlan)
@@ -173,10 +171,10 @@ export default function MapView() {
 
     // Draw floor plan image with opacity and scale
     const img = loadedImages.get(currentFloorPlan.id)
-    const scaledWidth = currentFloorPlan.width * imageScale
-    const scaledHeight = currentFloorPlan.height * imageScale
+    const scaledWidth = currentFloorPlan.width * mapImageScale
+    const scaledHeight = currentFloorPlan.height * mapImageScale
     if (img) {
-      ctx.globalAlpha = imageOpacity
+      ctx.globalAlpha = mapImageOpacity
       ctx.drawImage(img, 0, 0, scaledWidth, scaledHeight)
       ctx.globalAlpha = 1
     } else {
@@ -282,7 +280,7 @@ export default function MapView() {
     })
 
     ctx.restore()
-  }, [currentFloorPlan, pan, zoom, mapPositions, boxes, items, modules, selectedFloorPlan, loadedImages, hoveredEntity, selectedEntity, iconImages, imageOpacity, imageScale])
+  }, [currentFloorPlan, pan, zoom, mapPositions, boxes, items, modules, selectedFloorPlan, loadedImages, hoveredEntity, selectedEntity, iconImages, mapImageOpacity, mapImageScale])
 
   useEffect(() => {
     draw()
@@ -600,12 +598,12 @@ export default function MapView() {
                 type="range"
                 min="0"
                 max="100"
-                value={imageOpacity * 100}
-                onChange={(e) => setImageOpacity(parseInt(e.target.value) / 100)}
+                value={mapImageOpacity * 100}
+                onChange={(e) => setMapImageOpacity(parseInt(e.target.value) / 100)}
                 className="w-24 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-silver-600"
-                title={`Floor plan opacity: ${Math.round(imageOpacity * 100)}%`}
+                title={`Floor plan opacity: ${Math.round(mapImageOpacity * 100)}%`}
               />
-              <span className="text-sm text-slate-600 w-8">{Math.round(imageOpacity * 100)}%</span>
+              <span className="text-sm text-slate-600 w-8">{Math.round(mapImageOpacity * 100)}%</span>
             </div>
 
             <div className="flex items-center gap-2">
@@ -614,12 +612,12 @@ export default function MapView() {
                 type="range"
                 min="10"
                 max="200"
-                value={imageScale * 100}
-                onChange={(e) => setImageScale(parseInt(e.target.value) / 100)}
+                value={mapImageScale * 100}
+                onChange={(e) => setMapImageScale(parseInt(e.target.value) / 100)}
                 className="w-24 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-silver-600"
-                title={`Floor plan scale: ${Math.round(imageScale * 100)}%`}
+                title={`Floor plan scale: ${Math.round(mapImageScale * 100)}%`}
               />
-              <span className="text-sm text-slate-600 w-10">{Math.round(imageScale * 100)}%</span>
+              <span className="text-sm text-slate-600 w-10">{Math.round(mapImageScale * 100)}%</span>
             </div>
           </>
         )}

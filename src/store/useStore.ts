@@ -10,6 +10,8 @@ interface StorageData {
   floorPlans: FloorPlan[]
   roomPolygons: RoomPolygon[]
   mapPositions: MapPosition[]
+  mapImageOpacity: number
+  mapImageScale: number
 }
 
 interface State extends StorageData {
@@ -51,6 +53,8 @@ interface State extends StorageData {
   setMapPosition: (floorPlanId: string, entityType: 'box' | 'item', entityId: string, x: number, y: number) => void
   updateMapPosition: (id: string, x: number, y: number) => void
   deleteMapPosition: (id: string) => void
+  setMapImageOpacity: (opacity: number) => void
+  setMapImageScale: (scale: number) => void
 
   // Import/Export
   exportData: () => StorageData
@@ -86,6 +90,8 @@ export async function generateShareUrl(): Promise<string> {
     floorPlans: state.floorPlans,
     roomPolygons: state.roomPolygons,
     mapPositions: state.mapPositions,
+    mapImageOpacity: state.mapImageOpacity,
+    mapImageScale: state.mapImageScale,
   }
 
   const response = await fetch('/api/share', {
@@ -129,6 +135,8 @@ export const useStore = create<State>()(
       floorPlans: [],
       roomPolygons: [],
       mapPositions: [],
+      mapImageOpacity: 1,
+      mapImageScale: 1,
       selectedRoomId: null,
       hoveredItemId: null,
       hoveredModuleId: null,
@@ -292,6 +300,9 @@ export const useStore = create<State>()(
           mapPositions: state.mapPositions.filter((m) => m.id !== id),
         })),
 
+      setMapImageOpacity: (opacity) => set({ mapImageOpacity: opacity }),
+      setMapImageScale: (scale) => set({ mapImageScale: scale }),
+
       // Import/Export
       exportData: () => ({
         rooms: get().rooms,
@@ -301,6 +312,8 @@ export const useStore = create<State>()(
         floorPlans: get().floorPlans,
         roomPolygons: get().roomPolygons,
         mapPositions: get().mapPositions,
+        mapImageOpacity: get().mapImageOpacity,
+        mapImageScale: get().mapImageScale,
       }),
 
       importData: (data) =>
@@ -312,6 +325,8 @@ export const useStore = create<State>()(
           floorPlans: data.floorPlans || [],
           roomPolygons: data.roomPolygons || [],
           mapPositions: data.mapPositions || [],
+          mapImageOpacity: data.mapImageOpacity ?? 1,
+          mapImageScale: data.mapImageScale ?? 1,
           selectedRoomId: data.rooms.length > 0 ? data.rooms[0].id : null,
         }),
     }),
