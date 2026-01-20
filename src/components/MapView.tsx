@@ -30,12 +30,20 @@ interface HoveredEntity {
   y: number
 }
 
+interface ContextMenu {
+  x: number
+  y: number
+  positionId: string
+  entityType: 'box' | 'item'
+  entityId: string
+}
+
 export default function MapView() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const { floorPlans, roomPolygons, mapPositions, rooms, boxes, items, modules, addFloorPlan, deleteFloorPlan, setMapPosition, updateFloorPlan } = useStore()
+  const { floorPlans, roomPolygons, mapPositions, rooms, boxes, items, modules, addFloorPlan, deleteFloorPlan, setMapPosition, updateFloorPlan, deleteMapPosition } = useStore()
 
   const [selectedFloorPlan, setSelectedFloorPlan] = useState<string | null>(null)
   const [drawMode, setDrawMode] = useState<DrawMode>('pan')
@@ -52,6 +60,7 @@ export default function MapView() {
   const [editingFloorName, setEditingFloorName] = useState<string | null>(null)
   const [floorNameInput, setFloorNameInput] = useState('')
   const [imageOpacity, setImageOpacity] = useState(1)
+  const [contextMenu, setContextMenu] = useState<ContextMenu | null>(null)
 
   const currentFloorPlan = floorPlans.find(f => f.id === selectedFloorPlan)
   const [iconImages, setIconImages] = useState<Map<string, HTMLImageElement>>(new Map())
@@ -398,6 +407,43 @@ export default function MapView() {
     setMovingEntity(null)
   }
 
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault()
+    const pos = screenToCanvas(e.clientX, e.clientY)
+    const entity = findEntityAtPosition(pos)
+
+    if (entity) {
+      setContextMenu({
+        x: e.clientX,
+        y: e.clientY,
+        positionId: entity.positionId,
+        entityType: entity.type,
+        entityId: entity.id
+      })
+    } else {
+      setContextMenu(null)
+    }
+  }
+
+  const handleRemoveFromMap = () => {
+    if (contextMenu) {
+      deleteMapPosition(contextMenu.positionId)
+      setContextMenu(null)
+      if (selectedEntity?.type === contextMenu.entityType && selectedEntity?.id === contextMenu.entityId) {
+        setSelectedEntity(null)
+      }
+    }
+  }
+
+  // Close context menu when clicking elsewhere
+  useEffect(() => {
+    const handleClick = () => setContextMenu(null)
+    if (contextMenu) {
+      window.addEventListener('click', handleClick)
+      return () => window.removeEventListener('click', handleClick)
+    }
+  }, [contextMenu])
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
@@ -572,9 +618,8 @@ export default function MapView() {
                     ? roomBoxes.filter(b => !mapPositions.some(p => p.entityId === b.id && p.floorPlanId === selectedFloorPlan))
                     : roomBoxes
 
-                  const visibleItems = hidePlaced
-                    ? roomItems.filter(i => !mapPositions.some(p => p.entityId === i.id && p.floorPlanId === selectedFloorPlan))
-                    : roomItems
+                  // For items, we never hide them since they can be placed multiple times
+                  const visibleItems = roomItems
 
                   if (visibleBoxes.length === 0 && visibleItems.length === 0) return null
 
@@ -613,7 +658,7 @@ export default function MapView() {
                         <div className="space-y-1">
                           <div className="text-xs text-slate-500 mb-1">Items</div>
                           {visibleItems.map(item => {
-                            const isPlaced = mapPositions.some(p => p.entityId === item.id && p.floorPlanId === selectedFloorPlan)
+                            const placementCount = mapPositions.filter(p => p.entityId === item.id && p.floorPlanId === selectedFloorPlan).length
                             const icon = item.icon || DEFAULT_ITEM_ICONS[item.type]
                             return (
                               <button
@@ -629,7 +674,7 @@ export default function MapView() {
                                 <ItemIcon icon={icon} size={14} className="text-purple-600 flex-shrink-0" />
                                 <div className="flex-1 min-w-0">
                                   <div className="font-medium text-sm truncate">{item.name || ITEM_LABELS[item.type]}</div>
-                                  {isPlaced && <div className="text-xs text-green-600">Placed</div>}
+                                  {placementCount > 0 && <div className="text-xs text-green-600">Placed ({placementCount})</div>}
                                 </div>
                               </button>
                             )
@@ -652,6 +697,7 @@ export default function MapView() {
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUp}
               onMouseLeave={handleMouseUp}
+              onContextMenu={handleContextMenu}
               className="cursor-crosshair"
               style={{
                 cursor: drawMode === 'pan' ? (isPanning || movingEntity ? 'grabbing' : 'grab') :
@@ -662,6 +708,23 @@ export default function MapView() {
             {drawMode === 'place' && draggedEntity && (
               <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white px-4 py-2 rounded-lg shadow-lg text-sm">
                 Click to place: {draggedEntity.name}
+              </div>
+            )}
+
+            {/* Context menu */}
+            {contextMenu && (
+              <div
+                className="absolute bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-50"
+                style={{ left: contextMenu.x, top: contextMenu.y }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  onClick={handleRemoveFromMap}
+                  className="w-full px-4 py-2 text-left text-sm hover:bg-red-50 text-red-600 flex items-center gap-2"
+                >
+                  <Trash2 size={14} />
+                  Remove from map
+                </button>
               </div>
             )}
 

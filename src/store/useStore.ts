@@ -256,16 +256,21 @@ export const useStore = create<State>()(
 
       setMapPosition: (floorPlanId, entityType, entityId, x, y) =>
         set((state) => {
-          const existing = state.mapPositions.find(
-            (m) => m.entityType === entityType && m.entityId === entityId && m.floorPlanId === floorPlanId
-          )
-          if (existing) {
-            return {
-              mapPositions: state.mapPositions.map((m) =>
-                m.id === existing.id ? { ...m, x, y } : m
-              ),
+          // For boxes, update existing position if found (only one position per box)
+          // For items, always create a new position (allow multiple instances)
+          if (entityType === 'box') {
+            const existing = state.mapPositions.find(
+              (m) => m.entityType === 'box' && m.entityId === entityId && m.floorPlanId === floorPlanId
+            )
+            if (existing) {
+              return {
+                mapPositions: state.mapPositions.map((m) =>
+                  m.id === existing.id ? { ...m, x, y } : m
+                ),
+              }
             }
           }
+          // For items or new boxes, create a new position
           return {
             mapPositions: [
               ...state.mapPositions,
