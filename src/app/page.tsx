@@ -48,7 +48,7 @@ export default function Home() {
           >
             {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
-          <h1 className="text-lg font-semibold tracking-tight">Electric Planner</h1>
+          <h1 className="text-lg font-bold tracking-tight font-[family-name:var(--font-space-grotesk)]">Boxwise</h1>
         </div>
         <div className="flex gap-2">
           <button
