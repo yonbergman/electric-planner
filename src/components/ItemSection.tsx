@@ -70,7 +70,7 @@ export default function ItemSection({ roomId }: Props) {
   }
 
   return (
-    <div className="w-full lg:w-72 p-4 sm:p-6 pb-24 overflow-auto bg-white">
+    <div className="w-full lg:w-72 h-full p-4 sm:p-6 pb-24 overflow-auto bg-white">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider hidden lg:block">Items</h2>
         <div className="relative ml-auto" ref={dropdownRef}>

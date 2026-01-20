@@ -106,7 +106,7 @@ export default function RoomView() {
         </div>
 
         {/* Items Section - hidden on mobile when boxes tab active */}
-        <div className={`lg:border-l border-slate-200 ${mobileTab !== 'items' ? 'hidden lg:block' : ''}`}>
+        <div className={`lg:border-l border-slate-200 lg:h-full ${mobileTab !== 'items' ? 'hidden lg:block' : ''}`}>
           <ItemSection roomId={selectedRoomId!} />
         </div>
       </div>
