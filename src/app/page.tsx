@@ -1,9 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Menu, X, Share2, FileText } from 'lucide-react'
+import { Menu, X, Share2, FileText, Map } from 'lucide-react'
 import Sidebar from '@/components/Sidebar'
 import RoomView from '@/components/RoomView'
+import MapView from '@/components/MapView'
 import SummaryPage from '@/components/SummaryPage'
 import { loadFromUrl, generateShareUrl } from '@/store/useStore'
 
@@ -11,6 +12,7 @@ export default function Home() {
   const [copied, setCopied] = useState(false)
   const [loading, setLoading] = useState(true)
   const [showSummary, setShowSummary] = useState(false)
+  const [showMapView, setShowMapView] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   useEffect(() => {
@@ -52,6 +54,15 @@ export default function Home() {
         </div>
         <div className="flex gap-2">
           <button
+            onClick={() => setShowMapView(!showMapView)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+              showMapView ? 'bg-white/30' : 'bg-white/10 hover:bg-white/20'
+            }`}
+          >
+            <Map size={16} />
+            <span className="hidden sm:inline">Map View</span>
+          </button>
+          <button
             onClick={() => setShowSummary(true)}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-medium transition-colors"
           >
@@ -69,25 +80,31 @@ export default function Home() {
       </header>
 
       <div className="flex flex-1 overflow-hidden relative">
-        {/* Mobile sidebar overlay */}
-        {sidebarOpen && (
-          <div
-            className="fixed inset-0 bg-black/30 z-20 lg:hidden"
-            onClick={() => setSidebarOpen(false)}
-          />
+        {!showMapView && (
+          <>
+            {/* Mobile sidebar overlay */}
+            {sidebarOpen && (
+              <div
+                className="fixed inset-0 bg-black/30 z-20 lg:hidden"
+                onClick={() => setSidebarOpen(false)}
+              />
+            )}
+
+            {/* Sidebar */}
+            <div className={`
+              fixed lg:relative inset-y-0 left-0 z-30 lg:z-0
+              transform transition-transform duration-200 ease-out
+              ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+            `}>
+              <Sidebar onNavigate={() => setSidebarOpen(false)} />
+            </div>
+
+            {/* Main content */}
+            <RoomView />
+          </>
         )}
 
-        {/* Sidebar */}
-        <div className={`
-          fixed lg:relative inset-y-0 left-0 z-30 lg:z-0
-          transform transition-transform duration-200 ease-out
-          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-        `}>
-          <Sidebar onNavigate={() => setSidebarOpen(false)} />
-        </div>
-
-        {/* Main content */}
-        <RoomView />
+        {showMapView && <MapView />}
       </div>
 
       {showSummary && <SummaryPage onClose={() => setShowSummary(false)} />}

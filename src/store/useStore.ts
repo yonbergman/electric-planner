@@ -1,12 +1,15 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { Room, Box, Module, Item, ModuleType, ItemType, IconName } from '@/types'
+import { Room, Box, Module, Item, ModuleType, ItemType, IconName, FloorPlan, RoomPolygon, MapPosition, Point } from '@/types'
 
 interface StorageData {
   rooms: Room[]
   boxes: Box[]
   modules: Module[]
   items: Item[]
+  floorPlans: FloorPlan[]
+  roomPolygons: RoomPolygon[]
+  mapPositions: MapPosition[]
 }
 
 interface State extends StorageData {
@@ -37,6 +40,16 @@ interface State extends StorageData {
   addItem: (roomId: string, type: ItemType, name?: string) => void
   updateItem: (id: string, updates: Partial<Pick<Item, 'name' | 'icon'>>) => void
   deleteItem: (id: string) => void
+
+  // Map actions
+  addFloorPlan: (name: string, imageUrl: string) => string
+  updateFloorPlan: (id: string, name: string) => void
+  deleteFloorPlan: (id: string) => void
+  addRoomPolygon: (roomId: string, floorPlanId: string, points: Point[], type: 'rectangle' | 'polygon') => void
+  updateRoomPolygon: (id: string, roomId: string) => void
+  deleteRoomPolygon: (id: string) => void
+  setMapPosition: (id: string, type: 'box' | 'item', floorPlanId: string, position: Point) => void
+  deleteMapPosition: (id: string, type: 'box' | 'item') => void
 
   // Import/Export
   exportData: () => StorageData
@@ -69,6 +82,9 @@ export async function generateShareUrl(): Promise<string> {
     boxes: state.boxes,
     modules: state.modules,
     items: state.items,
+    floorPlans: state.floorPlans,
+    roomPolygons: state.roomPolygons,
+    mapPositions: state.mapPositions,
   }
 
   const response = await fetch('/api/share', {
@@ -91,7 +107,12 @@ export async function loadFromUrl(): Promise<boolean> {
     const json = await decompress(hash)
     const data = JSON.parse(json) as StorageData
     if (data.rooms && data.boxes && data.modules && data.items) {
-      useStore.getState().importData(data)
+      useStore.getState().importData({
+        ...data,
+        floorPlans: data.floorPlans || [],
+        roomPolygons: data.roomPolygons || [],
+        mapPositions: data.mapPositions || [],
+      })
       // Clear hash after loading
       window.history.replaceState(null, '', window.location.pathname)
       return true
@@ -109,6 +130,9 @@ export const useStore = create<State>()(
       boxes: [],
       modules: [],
       items: [],
+      floorPlans: [],
+      roomPolygons: [],
+      mapPositions: [],
       selectedRoomId: null,
       hoveredItemId: null,
       hoveredModuleId: null,
@@ -197,6 +221,63 @@ export const useStore = create<State>()(
           modules: state.modules.map((m) =>
             m.itemId === id ? { ...m, itemId: undefined } : m
           ),
+          mapPositions: state.mapPositions.filter((p) => !(p.type === 'item' && p.id === id)),
+        })),
+
+      // Map actions
+      addFloorPlan: (name, imageUrl) => {
+        const id = generateId()
+        set((state) => ({
+          floorPlans: [...state.floorPlans, { id, name, imageUrl }],
+        }))
+        return id
+      },
+
+      updateFloorPlan: (id, name) =>
+        set((state) => ({
+          floorPlans: state.floorPlans.map((f) => (f.id === id ? { ...f, name } : f)),
+        })),
+
+      deleteFloorPlan: (id) =>
+        set((state) => ({
+          floorPlans: state.floorPlans.filter((f) => f.id !== id),
+          roomPolygons: state.roomPolygons.filter((p) => p.floorPlanId !== id),
+          mapPositions: state.mapPositions.filter((p) => p.floorPlanId !== id),
+        })),
+
+      addRoomPolygon: (roomId, floorPlanId, points, type) =>
+        set((state) => ({
+          roomPolygons: [...state.roomPolygons, { id: generateId(), roomId, floorPlanId, points, type }],
+        })),
+
+      updateRoomPolygon: (id, roomId) =>
+        set((state) => ({
+          roomPolygons: state.roomPolygons.map((p) => (p.id === id ? { ...p, roomId } : p)),
+        })),
+
+      deleteRoomPolygon: (id) =>
+        set((state) => ({
+          roomPolygons: state.roomPolygons.filter((p) => p.id !== id),
+        })),
+
+      setMapPosition: (id, type, floorPlanId, position) =>
+        set((state) => {
+          const existing = state.mapPositions.find((p) => p.id === id && p.type === type)
+          if (existing) {
+            return {
+              mapPositions: state.mapPositions.map((p) =>
+                p.id === id && p.type === type ? { ...p, floorPlanId, position } : p
+              ),
+            }
+          }
+          return {
+            mapPositions: [...state.mapPositions, { id, type, floorPlanId, position }],
+          }
+        }),
+
+      deleteMapPosition: (id, type) =>
+        set((state) => ({
+          mapPositions: state.mapPositions.filter((p) => !(p.id === id && p.type === type)),
         })),
 
       // Import/Export
@@ -205,6 +286,9 @@ export const useStore = create<State>()(
         boxes: get().boxes,
         modules: get().modules,
         items: get().items,
+        floorPlans: get().floorPlans,
+        roomPolygons: get().roomPolygons,
+        mapPositions: get().mapPositions,
       }),
 
       importData: (data) =>
@@ -213,6 +297,9 @@ export const useStore = create<State>()(
           boxes: data.boxes,
           modules: data.modules,
           items: data.items,
+          floorPlans: data.floorPlans || [],
+          roomPolygons: data.roomPolygons || [],
+          mapPositions: data.mapPositions || [],
           selectedRoomId: data.rooms.length > 0 ? data.rooms[0].id : null,
         }),
     }),
