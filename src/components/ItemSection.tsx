@@ -78,7 +78,7 @@ export default function ItemSection({ roomId }: Props) {
             onClick={() => setShowDropdown(!showDropdown)}
             aria-label="Add item"
             aria-expanded={showDropdown}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-copper-500 text-white text-sm font-medium rounded-lg hover:bg-copper-600 transition-colors shadow-sm shadow-copper-500/20"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-silver-500 text-white text-sm font-medium rounded-lg hover:bg-silver-600 transition-colors shadow-sm shadow-silver-500/20"
           >
             <Plus size={16} />
             Add
@@ -109,7 +109,7 @@ export default function ItemSection({ roomId }: Props) {
           <p className="text-xs text-slate-400 mb-4">Items are things you control<br />(lights, fans, blinds)</p>
           <button
             onClick={() => setShowDropdown(true)}
-            className="px-4 py-2 bg-copper-500 text-white text-sm font-medium rounded-lg hover:bg-copper-600 transition-colors shadow-sm shadow-copper-500/20"
+            className="px-4 py-2 bg-silver-500 text-white text-sm font-medium rounded-lg hover:bg-silver-600 transition-colors shadow-sm shadow-silver-500/20"
           >
             <Plus size={16} className="inline mr-1 -mt-0.5" />
             Add first item
@@ -125,7 +125,7 @@ export default function ItemSection({ roomId }: Props) {
               key={item.id}
               className={`bg-slate-50 rounded-lg p-3 cursor-pointer transition-all ${
                 isHighlighted
-                  ? 'bg-copper-50 ring-2 ring-copper-400 shadow-lg shadow-copper-500/20'
+                  ? 'bg-silver-50 ring-2 ring-silver-400 shadow-lg shadow-silver-500/20'
                   : 'hover:bg-slate-100'
               }`}
               onMouseEnter={() => setHoveredItem(item.id)}
@@ -141,7 +141,7 @@ export default function ItemSection({ roomId }: Props) {
                     onBlur={() => handleSaveEdit(item.id)}
                     placeholder="Name (optional)"
                     autoFocus
-                    className="flex-1 px-3 py-1.5 text-sm bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-copper-500"
+                    className="flex-1 px-3 py-1.5 text-sm bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-silver-500"
                   />
                 </div>
               ) : (
@@ -150,7 +150,7 @@ export default function ItemSection({ roomId }: Props) {
                     <button
                       onClick={() => setIconPickerFor(iconPickerFor === item.id ? null : item.id)}
                       className={`p-1.5 rounded-lg transition-colors ${
-                        isHighlighted ? 'bg-copper-100 text-copper-600' : 'bg-white text-slate-500 hover:text-copper-500'
+                        isHighlighted ? 'bg-silver-100 text-silver-600' : 'bg-white text-slate-500 hover:text-silver-500'
                       }`}
                       aria-label="Change icon"
                     >

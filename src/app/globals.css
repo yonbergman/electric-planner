@@ -1,16 +1,50 @@
 @import "tailwindcss";
 
 @theme {
-  --color-copper-50: #fef7f0;
-  --color-copper-100: #fdeadb;
-  --color-copper-200: #fad3b5;
-  --color-copper-300: #f5b485;
-  --color-copper-400: #ed8f52;
-  --color-copper-500: #e07328;
-  --color-copper-600: #c75d1c;
-  --color-copper-700: #a54a18;
-  --color-copper-800: #863c15;
-  --color-copper-900: #6b3012;
+  --color-silver-50: #f8f9fa;
+  --color-silver-100: #f0f2f4;
+  --color-silver-200: #e1e5e9;
+  --color-silver-300: #cdd3d9;
+  --color-silver-400: #b0b8c1;
+  --color-silver-500: #8e98a3;
+  --color-silver-600: #6d7786;
+  --color-silver-700: #535d6a;
+  --color-silver-800: #3c4450;
+  --color-silver-900: #282e38;
+}
+
+/* Brushed metal effect */
+.brushed-silver {
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.03) 10%,
+      transparent 20%,
+      rgba(255, 255, 255, 0.02) 30%,
+      transparent 40%,
+      rgba(255, 255, 255, 0.04) 50%,
+      transparent 60%,
+      rgba(255, 255, 255, 0.02) 70%,
+      transparent 80%,
+      rgba(255, 255, 255, 0.03) 90%,
+      transparent 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.08) 0%,
+      transparent 30%,
+      transparent 70%,
+      rgba(0, 0, 0, 0.08) 100%
+    ),
+    linear-gradient(
+      to right,
+      #535d6a,
+      #6d7786 20%,
+      #7a8594 50%,
+      #6d7786 80%,
+      #535d6a
+    );
 }
 
 /* Custom scrollbar */

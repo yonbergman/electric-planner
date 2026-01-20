@@ -9,7 +9,7 @@ const spaceGrotesk = Space_Grotesk({
 })
 
 export const metadata: Metadata = {
-  title: 'Boxwise',
+  title: 'Plug & Plan',
   description: 'Plan electrical boxes, modules, and circuits',
 }
 

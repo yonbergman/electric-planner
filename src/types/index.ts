@@ -97,3 +97,33 @@ export interface Item {
   type: ItemType
   icon?: IconName
 }
+
+// Map view types
+export interface Point {
+  x: number
+  y: number
+}
+
+export interface FloorPlan {
+  id: string
+  name: string
+  imageUrl: string
+  width: number
+  height: number
+}
+
+export interface RoomPolygon {
+  id: string
+  roomId: string
+  floorPlanId: string
+  points: Point[]
+}
+
+export interface MapPosition {
+  id: string
+  floorPlanId: string
+  entityType: 'box' | 'item'
+  entityId: string
+  x: number
+  y: number
+}

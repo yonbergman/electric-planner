@@ -51,7 +51,7 @@ export default function SharePage() {
           <div className="text-slate-600 text-lg mb-4">{error}</div>
           <a
             href="/"
-            className="text-copper-600 hover:text-copper-700 font-medium"
+            className="text-silver-600 hover:text-silver-700 font-medium"
           >
             Go to home page
           </a>
