@@ -1,12 +1,15 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { Room, Box, Module, Item, ModuleType, ItemType, IconName } from '@/types'
+import { Room, Box, Module, Item, ModuleType, ItemType, IconName, FloorPlan, RoomPolygon, MapPosition } from '@/types'
 
 interface StorageData {
   rooms: Room[]
   boxes: Box[]
   modules: Module[]
   items: Item[]
+  floorPlans: FloorPlan[]
+  roomPolygons: RoomPolygon[]
+  mapPositions: MapPosition[]
 }
 
 interface State extends StorageData {
@@ -37,6 +40,15 @@ interface State extends StorageData {
   addItem: (roomId: string, type: ItemType, name?: string) => void
   updateItem: (id: string, updates: Partial<Pick<Item, 'name' | 'icon'>>) => void
   deleteItem: (id: string) => void
+
+  // Map actions
+  addFloorPlan: (name: string, imageUrl: string, width: number, height: number) => string
+  deleteFloorPlan: (id: string) => void
+  addRoomPolygon: (roomId: string, floorPlanId: string, points: { x: number; y: number }[]) => void
+  updateRoomPolygon: (id: string, points: { x: number; y: number }[]) => void
+  deleteRoomPolygon: (id: string) => void
+  setMapPosition: (floorPlanId: string, entityType: 'box' | 'item', entityId: string, x: number, y: number) => void
+  deleteMapPosition: (id: string) => void
 
   // Import/Export
   exportData: () => StorageData
@@ -69,6 +81,9 @@ export async function generateShareUrl(): Promise<string> {
     boxes: state.boxes,
     modules: state.modules,
     items: state.items,
+    floorPlans: state.floorPlans,
+    roomPolygons: state.roomPolygons,
+    mapPositions: state.mapPositions,
   }
 
   const response = await fetch('/api/share', {
@@ -109,6 +124,9 @@ export const useStore = create<State>()(
       boxes: [],
       modules: [],
       items: [],
+      floorPlans: [],
+      roomPolygons: [],
+      mapPositions: [],
       selectedRoomId: null,
       hoveredItemId: null,
       hoveredModuleId: null,
@@ -199,12 +217,71 @@ export const useStore = create<State>()(
           ),
         })),
 
+      // Map actions
+      addFloorPlan: (name, imageUrl, width, height) => {
+        const id = generateId()
+        set((state) => ({
+          floorPlans: [...state.floorPlans, { id, name, imageUrl, width, height }],
+        }))
+        return id
+      },
+
+      deleteFloorPlan: (id) =>
+        set((state) => ({
+          floorPlans: state.floorPlans.filter((f) => f.id !== id),
+          roomPolygons: state.roomPolygons.filter((r) => r.floorPlanId !== id),
+          mapPositions: state.mapPositions.filter((m) => m.floorPlanId !== id),
+        })),
+
+      addRoomPolygon: (roomId, floorPlanId, points) =>
+        set((state) => ({
+          roomPolygons: [...state.roomPolygons, { id: generateId(), roomId, floorPlanId, points }],
+        })),
+
+      updateRoomPolygon: (id, points) =>
+        set((state) => ({
+          roomPolygons: state.roomPolygons.map((r) => (r.id === id ? { ...r, points } : r)),
+        })),
+
+      deleteRoomPolygon: (id) =>
+        set((state) => ({
+          roomPolygons: state.roomPolygons.filter((r) => r.id !== id),
+        })),
+
+      setMapPosition: (floorPlanId, entityType, entityId, x, y) =>
+        set((state) => {
+          const existing = state.mapPositions.find(
+            (m) => m.entityType === entityType && m.entityId === entityId && m.floorPlanId === floorPlanId
+          )
+          if (existing) {
+            return {
+              mapPositions: state.mapPositions.map((m) =>
+                m.id === existing.id ? { ...m, x, y } : m
+              ),
+            }
+          }
+          return {
+            mapPositions: [
+              ...state.mapPositions,
+              { id: generateId(), floorPlanId, entityType, entityId, x, y },
+            ],
+          }
+        }),
+
+      deleteMapPosition: (id) =>
+        set((state) => ({
+          mapPositions: state.mapPositions.filter((m) => m.id !== id),
+        })),
+
       // Import/Export
       exportData: () => ({
         rooms: get().rooms,
         boxes: get().boxes,
         modules: get().modules,
         items: get().items,
+        floorPlans: get().floorPlans,
+        roomPolygons: get().roomPolygons,
+        mapPositions: get().mapPositions,
       }),
 
       importData: (data) =>
@@ -213,6 +290,9 @@ export const useStore = create<State>()(
           boxes: data.boxes,
           modules: data.modules,
           items: data.items,
+          floorPlans: data.floorPlans || [],
+          roomPolygons: data.roomPolygons || [],
+          mapPositions: data.mapPositions || [],
           selectedRoomId: data.rooms.length > 0 ? data.rooms[0].id : null,
         }),
     }),
