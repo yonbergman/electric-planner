@@ -43,6 +43,7 @@ interface State extends StorageData {
 
   // Map actions
   addFloorPlan: (name: string, imageUrl: string, width: number, height: number) => string
+  updateFloorPlan: (id: string, name: string) => void
   deleteFloorPlan: (id: string) => void
   addRoomPolygon: (roomId: string, floorPlanId: string, points: { x: number; y: number }[]) => void
   updateRoomPolygon: (id: string, points: { x: number; y: number }[]) => void
@@ -225,6 +226,11 @@ export const useStore = create<State>()(
         }))
         return id
       },
+
+      updateFloorPlan: (id, name) =>
+        set((state) => ({
+          floorPlans: state.floorPlans.map((f) => (f.id === id ? { ...f, name } : f)),
+        })),
 
       deleteFloorPlan: (id) =>
         set((state) => ({
