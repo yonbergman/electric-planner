@@ -70,6 +70,8 @@ export default function BoxEditor({ box, roomId, onClose }: Props) {
               placeholder="e.g. A1, Main, etc."
               className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-copper-500 focus:border-transparent placeholder:text-slate-400"
               autoFocus
+              autoComplete="off"
+              data-1p-ignore
             />
           </div>
           <div className="mb-6">

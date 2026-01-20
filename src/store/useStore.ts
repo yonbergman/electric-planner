@@ -70,11 +70,16 @@ export async function generateShareUrl(): Promise<string> {
     modules: state.modules,
     items: state.items,
   }
-  const json = JSON.stringify(data)
-  const compressed = await compress(json)
-  const url = new URL(window.location.href)
-  url.hash = compressed
-  return url.toString()
+
+  const response = await fetch('/api/share', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+  if (!response.ok) throw new Error('Failed to create share link')
+
+  const { path } = await response.json()
+  return `${window.location.origin}${path}`
 }
 
 // Load from URL hash
