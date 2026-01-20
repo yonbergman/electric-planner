@@ -98,7 +98,7 @@ export default function Sidebar({ onNavigate }: Props) {
       </div>
 
       {/* Room list */}
-      <ul className="flex-1 overflow-auto p-2 space-y-1">
+      <ul className="flex-1 overflow-auto p-2 pb-16 space-y-1">
         {rooms.map((room) => {
           const RoomIcon = getRoomIcon(room.name)
           return (

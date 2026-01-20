@@ -69,7 +69,7 @@ export default function RoomView() {
       {/* Content area - tabs on mobile, side-by-side on desktop */}
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
         {/* Boxes Section - hidden on mobile when items tab active */}
-        <div className={`flex-1 p-4 sm:p-6 overflow-auto ${mobileTab !== 'boxes' ? 'hidden lg:block' : ''}`}>
+        <div className={`flex-1 p-4 sm:p-6 pb-24 overflow-auto ${mobileTab !== 'boxes' ? 'hidden lg:block' : ''}`}>
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider hidden lg:block">Boxes</h2>
             <button
